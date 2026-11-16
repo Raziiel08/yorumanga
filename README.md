@@ -12,7 +12,7 @@ Sistema de gestión y venta de mangas físicos, desarrollado como proyecto integ
 
 1. Instalar dependencias con `npm install`.
 2. Crear un archivo `.env` en la raíz con `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
-3. Ejecutar `supabase/SQL_SETUP.sql` en el SQL Editor de un proyecto Supabase nuevo.
+3. Ejecutar `supabase/basededatos.sql` en el SQL Editor de un proyecto Supabase nuevo.
 4. Promover el primer usuario a administrador desde el SQL Editor de Supabase. No habilitar esa acción desde el cliente.
 5. Iniciar Expo con `npx expo start`.
 
