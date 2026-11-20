@@ -1,14 +1,24 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, RefreshControl,
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
   useWindowDimensions,
-} from 'react-native';
-import { productsService } from '../../services/productos';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { formatearMoneda } from '../../utils/moneda';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
+} from "react-native";
+import { productsService } from "../../services/productos";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { formatearMoneda } from "../../utils/moneda";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
 
 export default function ProductosVendedorScreen() {
   const [products, setProducts] = useState([]);
@@ -21,7 +31,9 @@ export default function ProductosVendedorScreen() {
     setCargando(true);
     try {
       setProducts(await productsService.getAll(true));
-    } catch (e) { console.error('Error cargando productos:', e); } finally {
+    } catch (e) {
+      console.error("Error cargando productos:", e);
+    } finally {
       setCargando(false);
     }
   }, []);
@@ -30,7 +42,8 @@ export default function ProductosVendedorScreen() {
   }, [load]);
   const filas = Math.ceil(products.length / columnas);
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <EncabezadoPantalla
           kicker="CATÁLOGO"
@@ -43,7 +56,11 @@ export default function ProductosVendedorScreen() {
           contentContainerStyle={styles.contenidoLista}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
+            <RefreshControl
+              refreshing={cargando}
+              onRefresh={load}
+              tintColor={COLORES.primario}
+            />
           }
         >
           {products.length > 0 ? (
@@ -52,17 +69,30 @@ export default function ProductosVendedorScreen() {
                 {products
                   .slice(indiceFila * columnas, (indiceFila + 1) * columnas)
                   .map((item) => (
-                    <View key={item.id} style={[styles.celda, { width: `${100 / columnas}%` }]}>
+                    <View
+                      key={item.id}
+                      style={[styles.celda, { width: `${100 / columnas}%` }]}
+                    >
                       <View style={styles.card}>
                         <View style={styles.cardCabecera}>
-                          <Text style={styles.cardTitle} numberOfLines={2}>{item.titulo}</Text>
+                          <Text style={styles.cardTitle} numberOfLines={2}>
+                            {item.titulo}
+                          </Text>
                           <Etiqueta
-                            texto={item.stock > 0 ? `${item.stock} disp.` : 'Sin stock'}
-                            variante={item.stock > 0 ? 'exito' : 'error'}
+                            texto={
+                              item.stock > 0
+                                ? `${item.stock} disp.`
+                                : "Sin stock"
+                            }
+                            variante={item.stock > 0 ? "exito" : "error"}
                           />
                         </View>
-                        <Text style={styles.cardPrecio}>{formatearMoneda(item.precio)}</Text>
-                        <Text style={styles.cardText}>{item.genero || 'Sin género'}</Text>
+                        <Text style={styles.cardPrecio}>
+                          {formatearMoneda(item.precio)}
+                        </Text>
+                        <Text style={styles.cardText}>
+                          {item.genero || "Sin género"}
+                        </Text>
                       </View>
                     </View>
                   ))}
@@ -71,16 +101,23 @@ export default function ProductosVendedorScreen() {
           ) : (
             <View style={styles.vacio}>
               <View style={styles.vacioIcono}>
-                <Icono nombre={cargando ? 'library' : 'search'} tamaño={34} color={COLORES.primarioClaro} />
+                <Icono
+                  nombre={cargando ? "library" : "search"}
+                  tamaño={34}
+                  color={COLORES.primarioClaro}
+                />
               </View>
               <Text style={styles.vacioTexto}>
-                {cargando ? 'Cargando productos…' : 'No hay productos disponibles.'}
+                {cargando
+                  ? "Cargando productos…"
+                  : "No hay productos disponibles."}
               </Text>
             </View>
           )}
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -90,8 +127,8 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
@@ -105,7 +142,7 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xl,
   },
   fila: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
   },
   celda: {
@@ -120,9 +157,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.xs,
   },
@@ -146,7 +183,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   vacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   vacioIcono: {
@@ -156,8 +193,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -165,6 +202,6 @@ const styles = StyleSheet.create({
     color: COLORES.textoSecundario,
     fontFamily: FUENTES.medio,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

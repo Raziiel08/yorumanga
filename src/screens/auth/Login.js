@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  KeyboardAvoidingView, Platform, ScrollView,
-} from 'react-native';
-import { useAuth } from '../../context/ContextoAuth';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { correoValido } from '../../utils/validaciones';
-import { Alert } from '../../utils/alertas';
-import Icono from '../../components/Icono';
-import LogoMarca from '../../components/LogoMarca';
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { useAuth } from "../../context/ContextoAuth";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { correoValido, validarErrorCorreo } from "../../utils/validaciones";
+import { Alert } from "../../utils/alertas";
+import Icono from "../../components/Icono";
+import LogoMarca from "../../components/LogoMarca";
 
 export default function PantallaLogin({ navigation }) {
-  const [correo, setCorreo] = useState('');
-  const [contrasena, setContrasena] = useState('');
+  const [correo, setCorreo] = useState("");
+  const [contrasena, setContrasena] = useState("");
   const [verContrasena, setVerContrasena] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [campoEnfocado, setCampoEnfocado] = useState(null);
@@ -20,23 +32,24 @@ export default function PantallaLogin({ navigation }) {
 
   const manejarLogin = async () => {
     if (!correo || !contrasena) {
-      Alert.alert('Error', 'Completa todos los campos');
+      Alert.alert("Error", "Completa todos los campos");
       return;
     }
-    if (!correoValido(correo)) {
-      Alert.alert('Error', 'Ingresá un correo electrónico válido');
+    const errorCorreo = validarErrorCorreo(correo);
+    if (errorCorreo) {
+      Alert.alert("Correo electrónico inválido", errorCorreo);
       return;
     }
     setCargando(true);
     const { error } = await signIn(correo, contrasena);
     setCargando(false);
-    if (error) Alert.alert('Error', error.message);
+    if (error) Alert.alert("Error", error.message);
   };
 
   return (
     <KeyboardAvoidingView
       style={estilos.contenedor}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
         contentContainerStyle={estilos.scroll}
@@ -55,32 +68,42 @@ export default function PantallaLogin({ navigation }) {
 
           <Text style={estilos.etiquetaCampo}>Correo electrónico</Text>
           <TextInput
-            style={[estilos.entrada, campoEnfocado === 'correo' && estilos.entradaEnfocada]}
+            style={[
+              estilos.entrada,
+              campoEnfocado === "correo" && estilos.entradaEnfocada,
+            ]}
             placeholder="usuario@email.com"
             placeholderTextColor={COLORES.textoAtenuado}
             value={correo}
             onChangeText={setCorreo}
             autoCapitalize="none"
             keyboardType="email-address"
-            onFocus={() => setCampoEnfocado('correo')}
+            onFocus={() => setCampoEnfocado("correo")}
             onBlur={() => setCampoEnfocado(null)}
           />
 
           <Text style={estilos.etiquetaCampo}>Contraseña</Text>
           <View style={estilos.filaEntrada}>
             <TextInput
-              style={[estilos.entrada, { flex: 1, marginBottom: 0 }, campoEnfocado === 'contrasena' && estilos.entradaEnfocada]}
+              style={[
+                estilos.entrada,
+                { flex: 1, marginBottom: 0 },
+                campoEnfocado === "contrasena" && estilos.entradaEnfocada,
+              ]}
               placeholder="••••••••"
               placeholderTextColor={COLORES.textoAtenuado}
               value={contrasena}
               onChangeText={setContrasena}
               secureTextEntry={!verContrasena}
-              onFocus={() => setCampoEnfocado('contrasena')}
+              onFocus={() => setCampoEnfocado("contrasena")}
               onBlur={() => setCampoEnfocado(null)}
             />
-            <TouchableOpacity style={estilos.botonOjo} onPress={() => setVerContrasena(!verContrasena)}>
+            <TouchableOpacity
+              style={estilos.botonOjo}
+              onPress={() => setVerContrasena(!verContrasena)}
+            >
               <Icono
-                nombre={verContrasena ? 'eye-off' : 'eye'}
+                nombre={verContrasena ? "eye-off" : "eye"}
                 tamaño={18}
                 color={COLORES.primario}
               />
@@ -94,16 +117,16 @@ export default function PantallaLogin({ navigation }) {
             activeOpacity={0.85}
           >
             <Text style={estilos.textoBoton}>
-              {cargando ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              {cargando ? "Iniciando sesión..." : "Iniciar Sesión"}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={estilos.contenedorEnlace}
-            onPress={() => navigation.navigate('Register')}
+            onPress={() => navigation.navigate("Register")}
           >
             <Text style={estilos.textoEnlace}>
-              ¿No tenés cuenta?{' '}
+              ¿No tenés cuenta?{" "}
               <Text style={estilos.textoEnlaceNegrita}>Registrate</Text>
             </Text>
           </TouchableOpacity>
@@ -120,12 +143,12 @@ const estilos = StyleSheet.create({
   },
   scroll: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: ESPACIADO.xl,
   },
   logoContenedor: {
@@ -134,7 +157,7 @@ const estilos = StyleSheet.create({
     paddingHorizontal: ESPACIADO.sm,
     paddingVertical: ESPACIADO.xs,
     marginBottom: ESPACIADO.xs,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   logoSlogan: {
     fontSize: 14,
@@ -143,7 +166,7 @@ const estilos = StyleSheet.create({
     letterSpacing: 0.5,
   },
   tarjeta: {
-    width: '100%',
+    width: "100%",
     maxWidth: 420,
     backgroundColor: COLORES.superficie,
     padding: ESPACIADO.xl,
@@ -186,7 +209,7 @@ const estilos = StyleSheet.create({
     backgroundColor: COLORES.primario,
     paddingVertical: ESPACIADO.md,
     borderRadius: RADIO.sm,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: ESPACIADO.sm,
     ...SOMBRAS.sm,
   },
@@ -194,14 +217,14 @@ const estilos = StyleSheet.create({
     opacity: 0.6,
   },
   textoBoton: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: FUENTES.extrabold,
     fontSize: 15,
     letterSpacing: 0.3,
   },
   contenedorEnlace: {
     marginTop: ESPACIADO.lg,
-    alignItems: 'center',
+    alignItems: "center",
   },
   textoEnlace: {
     color: COLORES.textoSecundario,
@@ -213,8 +236,8 @@ const estilos = StyleSheet.create({
     fontFamily: FUENTES.extrabold,
   },
   filaEntrada: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.md,
   },
@@ -224,7 +247,7 @@ const estilos = StyleSheet.create({
   },
   textoOjo: {
     color: COLORES.primario,
-    fontWeight: '700',
+    fontWeight: "700",
     fontSize: 13,
   },
 });

@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import Icono from './Icono';
-import { COLORES, ESPACIADO, FUENTES, RADIO } from '../constants/theme';
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import Icono from "./Icono";
+import { COLORES, ESPACIADO, FUENTES, RADIO } from "../constants/theme";
 
 /**
  * Botón de acción destructiva con confirmación inline:
@@ -9,9 +9,9 @@ import { COLORES, ESPACIADO, FUENTES, RADIO } from '../constants/theme';
  * segundo toque → ejecuta la acción. Sin popups.
  */
 export default function ConfirmarBoton({
-  texto = 'Eliminar',
-  textoConfirmar = '¿Confirmar?',
-  icono = 'trash-outline',
+  texto = "Eliminar",
+  textoConfirmar = "¿Confirmar?",
+  icono = "trash-outline",
   alConfirmar,
   compacto = false,
   estilo,
@@ -46,11 +46,17 @@ export default function ConfirmarBoton({
       ]}
     >
       <Icono
-        nombre={pendiente ? 'warning-outline' : icono}
+        nombre={pendiente ? "warning-outline" : icono}
         tamaño={15}
-        color={pendiente ? '#FFFFFF' : COLORES.error}
+        color={pendiente ? "#FFFFFF" : COLORES.error}
       />
-      <Text style={[estilos.texto, pendiente && estilos.textoPendiente, estiloTexto]}>
+      <Text
+        style={[
+          estilos.texto,
+          pendiente && estilos.textoPendiente,
+          estiloTexto,
+        ]}
+      >
         {pendiente ? textoConfirmar : texto}
       </Text>
     </TouchableOpacity>
@@ -59,9 +65,9 @@ export default function ConfirmarBoton({
 
 const estilos = StyleSheet.create({
   boton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 4,
     paddingHorizontal: ESPACIADO.sm,
     paddingVertical: ESPACIADO.xs,
@@ -83,6 +89,6 @@ const estilos = StyleSheet.create({
     fontSize: 13,
   },
   textoPendiente: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 });

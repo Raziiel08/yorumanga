@@ -1,4 +1,4 @@
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from "react-native";
 
 export function useResponsive() {
   const { width } = useWindowDimensions();
@@ -6,6 +6,13 @@ export function useResponsive() {
   const esTablet = width >= 768 && width < 1024;
   const esEscritorio = width >= 1024;
   const columnas = esMobile ? 2 : esTablet ? 3 : width >= 1440 ? 5 : 4;
-  const anchoMaxContenido = esEscritorio ? 1360 : '100%';
-  return { width, esMobile, esTablet, esEscritorio, columnas, anchoMaxContenido };
+  const anchoMaxContenido = esEscritorio ? 1360 : "100%";
+  return {
+    width,
+    esMobile,
+    esTablet,
+    esEscritorio,
+    columnas,
+    anchoMaxContenido,
+  };
 }

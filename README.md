@@ -1,33 +1,32 @@
 # YORUMANGA
 
-Sistema de gestión y venta de mangas físicos, desarrollado como proyecto integrador.
+Sistema de gestión para tienda de mangas físicos (Proyecto Integrador).
 
-## Tecnologías
+## Stack
+- React Native (Expo)
+- Supabase (PostgreSQL + Auth + RLS)
+- Google Gemini (Recomendador con IA)
 
-- React Native con Expo
-- Supabase Auth y PostgreSQL con políticas RLS
-- Supabase Edge Functions para las llamadas a Google Gemini
-
-## Puesta en marcha
-
-1. Instalar dependencias con `npm install`.
-2. Crear un archivo `.env` en la raíz con `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
-3. Ejecutar `supabase/basededatos.sql` en el SQL Editor de un proyecto Supabase nuevo.
-4. Promover el primer usuario a administrador desde el SQL Editor de Supabase. No habilitar esa acción desde el cliente.
-5. Iniciar Expo con `npx expo start`.
-
+## Configuración rápida
+1. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+2. Crear archivo `.env` basado en `.env.example`:
+   ```env
+   EXPO_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+   EXPO_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
+   EXPO_PUBLIC_GEMINI_API_KEY=tu_gemini_api_key
+   ```
+3. Ejecutar el script SQL en Supabase SQL Editor:
+   - Archivo: `supabase/basededatos.sql`
+4. Iniciar la aplicación:
+   ```bash
+   npx expo start
+   ```
 
 ## Roles
-
-- **Cliente:** catálogo, pedidos, solicitudes y recomendaciones.
-- **Vendedor:** ventas de mostrador, clientes y lectura del catálogo.
-- **Depósito:** catálogo, proveedores y movimientos de stock.
-- **Admin:** administración, pedidos, solicitudes, reportes y roles.
-
-## Funcionalidades
-
-- Catálogo, carrito y pedidos en línea.
-- Registro de ventas presenciales.
-- Control transaccional de stock y su historial.
-- Gestión de clientes, proveedores y usuarios.
-- Recomendador de mangas e informes asistidos por IA.
+- **Cliente:** Catálogo con filtros y novedades, carrito, pedidos y recomendador IA.
+- **Vendedor:** Ventas en mostrador (POS) y gestión de clientes.
+- **Depósito:** Control de stock, movimientos y proveedores.
+- **Admin:** Panel de métricas, usuarios, pedidos, solicitudes y reportes.

@@ -1,24 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity,
-  ActivityIndicator, useWindowDimensions,
-} from 'react-native';
-import { Alert } from '../../utils/alertas';
-import { salesService } from '../../services/ventas';
-import { ordersService } from '../../services/pedidos';
-import { aiService } from '../../services/ia';
-import { resumirActividad } from '../../utils/reportes';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { formatearMoneda } from '../../utils/moneda';
-import Icono from '../../components/Icono';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import Boton from '../../components/Boton';
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  useWindowDimensions,
+} from "react-native";
+import { Alert } from "../../utils/alertas";
+import { salesService } from "../../services/ventas";
+import { ordersService } from "../../services/pedidos";
+import { aiService } from "../../services/ia";
+import { resumirActividad } from "../../utils/reportes";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { formatearMoneda } from "../../utils/moneda";
+import Icono from "../../components/Icono";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import Boton from "../../components/Boton";
 
 export default function ReportesScreen() {
   const [report, setReport] = useState(null);
   const [cargando, setCargando] = useState(false);
-  const [chatInput, setChatInput] = useState('');
-  const [chatReply, setChatReply] = useState('');
+  const [chatInput, setChatInput] = useState("");
+  const [chatReply, setChatReply] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const { width } = useWindowDimensions();
   const anchoContenido = Math.min(width - ESPACIADO.lg * 2, 1080);
@@ -26,17 +38,25 @@ export default function ReportesScreen() {
   const generar = async () => {
     setCargando(true);
     try {
-      const [sales, orders] = await Promise.all([salesService.getAll(), ordersService.getAll()]);
-      const { totalVentas, totalPedidos, productosMasVendidos, ventasRecientes } = resumirActividad(sales, orders);
+      const [sales, orders] = await Promise.all([
+        salesService.getAll(),
+        ordersService.getAll(),
+      ]);
+      const {
+        totalVentas,
+        totalPedidos,
+        productosMasVendidos,
+        ventasRecientes,
+      } = resumirActividad(sales, orders);
       const r = await aiService.generateReport({
         totalVentas,
         totalPedidos,
         productosMasVendidos,
-        ventasRecientes
+        ventasRecientes,
       });
       setReport(r);
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -48,12 +68,13 @@ export default function ReportesScreen() {
       const reply = await aiService.chatAssistant(chatInput);
       setChatReply(reply);
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setChatLoading(false);
     }
   };
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <EncabezadoPantalla
           kicker="ANÁLISIS"
@@ -77,17 +98,25 @@ export default function ReportesScreen() {
           {report && (
             <View style={styles.card}>
               <View style={styles.cardCabecera}>
-                <Icono nombre="document-text" tamaño={20} color={COLORES.primario} />
+                <Icono
+                  nombre="document-text"
+                  tamaño={20}
+                  color={COLORES.primario}
+                />
                 <Text style={styles.cardTitulo}>Resumen</Text>
               </View>
               <Text style={styles.cardTexto}>{report.resumen}</Text>
               <View style={styles.metricas}>
                 <View style={styles.metrica}>
-                  <Text style={styles.metricaValor}>{formatearMoneda(report.total_ventas)}</Text>
+                  <Text style={styles.metricaValor}>
+                    {formatearMoneda(report.total_ventas)}
+                  </Text>
                   <Text style={styles.metricaEtiqueta}>Ventas totales</Text>
                 </View>
                 <View style={styles.metrica}>
-                  <Text style={styles.metricaValor}>{report.total_pedidos}</Text>
+                  <Text style={styles.metricaValor}>
+                    {report.total_pedidos}
+                  </Text>
                   <Text style={styles.metricaEtiqueta}>Pedidos online</Text>
                 </View>
               </View>
@@ -95,13 +124,19 @@ export default function ReportesScreen() {
               {report.productos_mas_vendidos.map((p, i) => (
                 <View key={i} style={styles.itemFila}>
                   <View style={styles.itemPunto} />
-                  <Text style={styles.itemTexto}>{p.titulo}: {p.cantidad}</Text>
+                  <Text style={styles.itemTexto}>
+                    {p.titulo}: {p.cantidad}
+                  </Text>
                 </View>
               ))}
               <Text style={styles.subtituloSeccion}>Recomendaciones</Text>
               {report.recomendaciones.map((r, i) => (
                 <View key={i} style={styles.itemFila}>
-                  <Icono nombre="bulb-outline" tamaño={14} color={COLORES.acentoOscuro} />
+                  <Icono
+                    nombre="bulb-outline"
+                    tamaño={14}
+                    color={COLORES.acentoOscuro}
+                  />
                   <Text style={styles.itemTexto}>{r}</Text>
                 </View>
               ))}
@@ -110,7 +145,11 @@ export default function ReportesScreen() {
 
           <View style={styles.card}>
             <View style={styles.cardCabecera}>
-              <Icono nombre="chatbubbles" tamaño={20} color={COLORES.primario} />
+              <Icono
+                nombre="chatbubbles"
+                tamaño={20}
+                color={COLORES.primario}
+              />
               <Text style={styles.cardTitulo}>Asistente IA</Text>
             </View>
             <TextInput
@@ -134,7 +173,8 @@ export default function ReportesScreen() {
           </View>
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -144,8 +184,8 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
@@ -168,8 +208,8 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.sm,
   },
@@ -186,7 +226,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
   metricas: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
     marginTop: ESPACIADO.md,
   },
@@ -218,8 +258,8 @@ const styles = StyleSheet.create({
     marginBottom: ESPACIADO.xs,
   },
   itemFila: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     paddingVertical: 4,
   },

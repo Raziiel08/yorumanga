@@ -1,7 +1,13 @@
 export function resumirActividad(sales, orders) {
-  const ventasCompletadas = sales.filter((sale) => sale.estado === 'completada');
-  const pedidosCompletados = orders.filter((order) => order.estado === 'completado');
-  const pedidosNoCancelados = orders.filter((order) => order.estado !== 'cancelado');
+  const ventasCompletadas = sales.filter(
+    (sale) => sale.estado === "completada",
+  );
+  const pedidosCompletados = orders.filter(
+    (order) => order.estado === "completado",
+  );
+  const pedidosNoCancelados = orders.filter(
+    (order) => order.estado !== "cancelado",
+  );
   const productos = new Map();
 
   const contarItems = (items = []) => {
@@ -21,8 +27,15 @@ export function resumirActividad(sales, orders) {
   for (const order of pedidosCompletados) contarItems(order.items);
 
   return {
-    totalVentas: ventasCompletadas.reduce((sum, sale) => sum + (Number(sale.total) || 0), 0)
-      + pedidosCompletados.reduce((sum, order) => sum + (Number(order.total) || 0), 0),
+    totalVentas:
+      ventasCompletadas.reduce(
+        (sum, sale) => sum + (Number(sale.total) || 0),
+        0,
+      ) +
+      pedidosCompletados.reduce(
+        (sum, order) => sum + (Number(order.total) || 0),
+        0,
+      ),
     totalPedidos: pedidosNoCancelados.length,
     productosMasVendidos: [...productos.values()]
       .sort((a, b) => b.cantidad - a.cantidad)

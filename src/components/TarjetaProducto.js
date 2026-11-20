@@ -1,16 +1,29 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View,
-} from 'react-native';
-import Icono from './Icono';
-import Etiqueta from './Etiqueta';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../constants/theme';
-import { formatearMoneda } from '../utils/moneda';
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import Icono from "./Icono";
+import Etiqueta from "./Etiqueta";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../constants/theme";
+import { formatearMoneda } from "../utils/moneda";
 
 export default function TarjetaProducto({ producto, onAbrir, onAgregar }) {
   const enOferta = Number(producto.precio_anterior) > Number(producto.precio);
   const descuento = enOferta
-    ? Math.round((1 - Number(producto.precio) / Number(producto.precio_anterior)) * 100)
+    ? Math.round(
+        (1 - Number(producto.precio) / Number(producto.precio_anterior)) * 100,
+      )
     : 0;
   const { width } = useWindowDimensions();
   const tarjetaEstrecha = width < 480;
@@ -30,46 +43,69 @@ export default function TarjetaProducto({ producto, onAbrir, onAgregar }) {
     <View style={styles.card}>
       <TouchableOpacity onPress={onAbrir} activeOpacity={0.88}>
         <View style={styles.portadaContenedor}>
-          {producto.imagen
-            ? (
-              <Image
-                source={{ uri: producto.imagen }}
-                style={styles.portada}
-                onError={(event) => console.warn('Error imagen:', producto.titulo, event.nativeEvent?.error)}
-              />
-            )
-            : (
-              <View style={[styles.portada, styles.portadaVacia]}>
-                <Icono nombre="book" tamaño={34} color={COLORES.primarioLight} />
-                <Text style={styles.textoPortadaVacia}>Portada pendiente</Text>
-              </View>
-            )}
+          {producto.imagen ? (
+            <Image
+              source={{ uri: producto.imagen }}
+              style={styles.portada}
+              onError={(event) =>
+                console.warn(
+                  "Error imagen:",
+                  producto.titulo,
+                  event.nativeEvent?.error,
+                )
+              }
+            />
+          ) : (
+            <View style={[styles.portada, styles.portadaVacia]}>
+              <Icono nombre="book" tamaño={34} color={COLORES.primarioLight} />
+              <Text style={styles.textoPortadaVacia}>Portada pendiente</Text>
+            </View>
+          )}
           {enOferta && (
-            <Etiqueta texto={`OFERTA · −${descuento}%`} variante="acento" estilo={styles.etiquetaOferta} />
+            <Etiqueta
+              texto={`OFERTA · −${descuento}%`}
+              variante="acento"
+              estilo={styles.etiquetaOferta}
+            />
           )}
           {producto.destacado && (
-            <Etiqueta texto="DESTACADO" variante="primarioSuave" estilo={styles.etiquetaDestacado} />
+            <Etiqueta
+              texto="DESTACADO"
+              variante="primarioSuave"
+              estilo={styles.etiquetaDestacado}
+            />
           )}
         </View>
-        <Text style={styles.titulo} numberOfLines={2}>{producto.titulo}</Text>
+        <Text style={styles.titulo} numberOfLines={2}>
+          {producto.titulo}
+        </Text>
         <Text style={styles.autor} numberOfLines={1}>
-          {producto.autor || 'Autor pendiente'}
+          {producto.autor || "Autor pendiente"}
         </Text>
       </TouchableOpacity>
 
-      <View style={[styles.filaPrecio, tarjetaEstrecha && styles.filaPrecioEstrecha]}>
+      <View
+        style={[
+          styles.filaPrecio,
+          tarjetaEstrecha && styles.filaPrecioEstrecha,
+        ]}
+      >
         <View>
           {enOferta && (
-            <Text style={styles.precioAnterior}>{formatearMoneda(producto.precio_anterior)}</Text>
+            <Text style={styles.precioAnterior}>
+              {formatearMoneda(producto.precio_anterior)}
+            </Text>
           )}
           <Text style={styles.precio}>{formatearMoneda(producto.precio)}</Text>
         </View>
-        <Text style={[
-          styles.stock,
-          tarjetaEstrecha && styles.stockEstrecho,
-          producto.stock <= 0 && styles.sinStock,
-        ]}>
-          {producto.stock > 0 ? `${producto.stock} disp.` : 'Sin stock'}
+        <Text
+          style={[
+            styles.stock,
+            tarjetaEstrecha && styles.stockEstrecho,
+            producto.stock <= 0 && styles.sinStock,
+          ]}
+        >
+          {producto.stock > 0 ? `${producto.stock} disp.` : "Sin stock"}
         </Text>
       </View>
 
@@ -85,15 +121,21 @@ export default function TarjetaProducto({ producto, onAbrir, onAgregar }) {
         activeOpacity={0.85}
       >
         <Icono
-          nombre={agregado ? 'checkmark' : 'cart'}
+          nombre={agregado ? "checkmark" : "cart"}
           tamaño={16}
-          color={producto.stock <= 0 ? COLORES.textoAtenuado : '#FFFFFF'}
+          color={producto.stock <= 0 ? COLORES.textoAtenuado : "#FFFFFF"}
         />
-        <Text style={[
-          styles.textoBoton,
-          producto.stock <= 0 && styles.textoBotonDeshabilitado,
-        ]}>
-          {producto.stock <= 0 ? 'Sin stock' : agregado ? 'Agregado' : 'Agregar'}
+        <Text
+          style={[
+            styles.textoBoton,
+            producto.stock <= 0 && styles.textoBotonDeshabilitado,
+          ]}
+        >
+          {producto.stock <= 0
+            ? "Sin stock"
+            : agregado
+              ? "Agregado"
+              : "Agregar"}
         </Text>
       </TouchableOpacity>
     </View>
@@ -113,11 +155,11 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   portadaContenedor: {
-    position: 'relative',
+    position: "relative",
     marginBottom: ESPACIADO.md,
   },
   portada: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 0.72,
     borderRadius: RADIO.md,
     backgroundColor: COLORES.superficieAlterna,
@@ -125,8 +167,8 @@ const styles = StyleSheet.create({
     borderColor: COLORES.bordeSuave,
   },
   portadaVacia: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: ESPACIADO.xs,
     backgroundColor: COLORES.primarioTinte,
   },
@@ -136,12 +178,12 @@ const styles = StyleSheet.create({
     fontFamily: FUENTES.bold,
   },
   etiquetaOferta: {
-    position: 'absolute',
+    position: "absolute",
     top: ESPACIADO.sm,
     left: ESPACIADO.sm,
   },
   etiquetaDestacado: {
-    position: 'absolute',
+    position: "absolute",
     top: ESPACIADO.sm,
     right: ESPACIADO.sm,
   },
@@ -159,17 +201,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   filaPrecio: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
     gap: ESPACIADO.xs,
     marginTop: ESPACIADO.md,
     minHeight: 42,
   },
   filaPrecioEstrecha: {
-    alignItems: 'flex-start',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    alignItems: "flex-start",
+    flexDirection: "column",
+    justifyContent: "center",
     gap: 2,
     minHeight: 60,
   },
@@ -177,7 +219,7 @@ const styles = StyleSheet.create({
     color: COLORES.textoAtenuado,
     fontSize: 13,
     fontFamily: FUENTES.medio,
-    textDecorationLine: 'line-through',
+    textDecorationLine: "line-through",
   },
   precio: {
     color: COLORES.primario,
@@ -189,10 +231,10 @@ const styles = StyleSheet.create({
     color: COLORES.textoAtenuado,
     fontSize: 11,
     fontFamily: FUENTES.bold,
-    textAlign: 'right',
+    textAlign: "right",
   },
   stockEstrecho: {
-    textAlign: 'left',
+    textAlign: "left",
   },
   sinStock: {
     color: COLORES.error,
@@ -201,9 +243,9 @@ const styles = StyleSheet.create({
     minHeight: 44,
     marginTop: ESPACIADO.md,
     paddingHorizontal: ESPACIADO.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     backgroundColor: COLORES.primario,
     borderRadius: RADIO.md,
@@ -215,10 +257,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.exito,
   },
   textoBoton: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
     fontFamily: FUENTES.extrabold,
-    textAlign: 'center',
+    textAlign: "center",
   },
   textoBotonDeshabilitado: {
     color: COLORES.textoAtenuado,

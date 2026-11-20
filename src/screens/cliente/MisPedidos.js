@@ -1,38 +1,44 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import { ordersService } from '../../services/pedidos';
-import { useAuth } from '../../context/ContextoAuth';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { formatearMoneda } from '../../utils/moneda';
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import { ordersService } from "../../services/pedidos";
+import { useAuth } from "../../context/ContextoAuth";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { formatearMoneda } from "../../utils/moneda";
 
 const ESTILOS_ESTADO = {
-  pendiente: 'advertencia',
-  confirmado: 'info',
-  preparacion: 'info',
-  enviado: 'primarioSuave',
-  entregado: 'exito',
-  completado: 'exito',
-  cancelado: 'error',
-  rechazado: 'error',
+  pendiente: "advertencia",
+  confirmado: "info",
+  preparacion: "info",
+  enviado: "primarioSuave",
+  entregado: "exito",
+  completado: "exito",
+  cancelado: "error",
+  rechazado: "error",
 };
 
 export default function MisPedidosScreen() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const load = useCallback(async () => {
     if (!user) return;
     setCargando(true);
-    setError('');
+    setError("");
     try {
       setOrders(await ordersService.getByUser(user.id));
     } catch (e) {
-      console.error('Error cargando pedidos:', e);
-      setError('No se pudieron cargar tus pedidos.');
+      console.error("Error cargando pedidos:", e);
+      setError("No se pudieron cargar tus pedidos.");
     } finally {
       setCargando(false);
     }
@@ -52,25 +58,36 @@ export default function MisPedidosScreen() {
       <FlatList
         data={orders}
         keyExtractor={(i) => i.id}
-        refreshControl={(
-          <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
-        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={cargando}
+            onRefresh={load}
+            tintColor={COLORES.primario}
+          />
+        }
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.filaEncabezado}>
-              <Text style={styles.cardTitle}>#{item.id.slice(0, 8).toUpperCase()}</Text>
+              <Text style={styles.cardTitle}>
+                #{item.id.slice(0, 8).toUpperCase()}
+              </Text>
               <Etiqueta
                 texto={item.estado}
-                variante={ESTILOS_ESTADO[(item.estado || '').toLowerCase()] || 'neutro'}
+                variante={
+                  ESTILOS_ESTADO[(item.estado || "").toLowerCase()] || "neutro"
+                }
               />
             </View>
             <Text style={styles.cardText}>
-              {new Date(item.creado_en).toLocaleDateString('es-AR', {
-                day: 'numeric', month: 'long', year: 'numeric',
+              {new Date(item.creado_en).toLocaleDateString("es-AR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
               })}
-              {' · '}
-              {new Date(item.creado_en).toLocaleTimeString('es-AR', {
-                hour: '2-digit', minute: '2-digit',
+              {" · "}
+              {new Date(item.creado_en).toLocaleTimeString("es-AR", {
+                hour: "2-digit",
+                minute: "2-digit",
               })}
             </Text>
             <View style={styles.separador} />
@@ -80,16 +97,22 @@ export default function MisPedidosScreen() {
             </View>
           </View>
         )}
-        ListEmptyComponent={(
+        ListEmptyComponent={
           <View style={styles.contenedorVacio}>
             <View style={styles.iconoVacioContenedor}>
-              <Icono nombre="receipt-outline" tamaño={32} color={COLORES.primarioLight} />
+              <Icono
+                nombre="receipt-outline"
+                tamaño={32}
+                color={COLORES.primarioLight}
+              />
             </View>
             <Text style={styles.empty}>
-              {cargando ? 'Cargando pedidos…' : 'Todavía no realizaste ningún pedido.'}
+              {cargando
+                ? "Cargando pedidos…"
+                : "Todavía no realizaste ningún pedido."}
             </Text>
           </View>
-        )}
+        }
       />
     </View>
   );
@@ -98,9 +121,9 @@ export default function MisPedidosScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: 1080,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: COLORES.fondo,
     padding: ESPACIADO.lg,
   },
@@ -119,9 +142,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   filaEncabezado: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.xs,
   },
@@ -143,9 +166,9 @@ const styles = StyleSheet.create({
     marginVertical: ESPACIADO.sm,
   },
   filaTotal: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
   etiquetaTotal: {
     color: COLORES.textoSecundario,
@@ -160,7 +183,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   contenedorVacio: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: ESPACIADO.xl,
   },
   iconoVacioContenedor: {
@@ -168,13 +191,13 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: RADIO.full,
     backgroundColor: COLORES.primarioTinte,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
   },
   empty: {
     color: COLORES.textoSecundario,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: ESPACIADO.xs,
     fontFamily: FUENTES.bold,
   },

@@ -1,43 +1,56 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
-import Icono from './Icono';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../constants/theme';
+import React from "react";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  View,
+} from "react-native";
+import Icono from "./Icono";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../constants/theme";
 
 export default function Boton({
   titulo,
   alPresionar,
   cargando = false,
-  variante = 'primario',
+  variante = "primario",
   deshabilitado = false,
-  tamaño = 'md',
+  tamaño = "md",
   icono = null,
   estilo,
 }) {
   const obtenerEstiloBoton = () => {
-    if (variante === 'secundario') return estilos.secundario;
-    if (variante === 'contorno') return estilos.contorno;
-    if (variante === 'peligro') return estilos.peligro;
-    if (variante === 'fantasma') return estilos.fantasma;
-    if (variante === 'acento') return estilos.acento;
+    if (variante === "secundario") return estilos.secundario;
+    if (variante === "contorno") return estilos.contorno;
+    if (variante === "peligro") return estilos.peligro;
+    if (variante === "fantasma") return estilos.fantasma;
+    if (variante === "acento") return estilos.acento;
     return estilos.primario;
   };
 
   const obtenerEstiloTexto = () => {
-    if (variante === 'contorno') return estilos.textoContorno;
-    if (variante === 'secundario') return estilos.textoSecundario;
-    if (variante === 'fantasma') return estilos.textoFantasma;
+    if (variante === "contorno") return estilos.textoContorno;
+    if (variante === "secundario") return estilos.textoSecundario;
+    if (variante === "fantasma") return estilos.textoFantasma;
     return estilos.textoPrimario;
   };
 
   const obtenerEstiloTamaño = () => {
-    if (tamaño === 'sm') return estilos.tamañoChico;
-    if (tamaño === 'lg') return estilos.tamañoGrande;
+    if (tamaño === "sm") return estilos.tamañoChico;
+    if (tamaño === "lg") return estilos.tamañoGrande;
     return {};
   };
 
-  const esPrimario = variante === 'primario' || variante === 'peligro' || variante === 'acento';
-  const colorIcono = esPrimario ? '#FFFFFF' : COLORES.primario;
-  const tamañoIcono = tamaño === 'sm' ? 15 : tamaño === 'lg' ? 20 : 17;
+  const esPrimario =
+    variante === "primario" || variante === "peligro" || variante === "acento";
+  const colorIcono = esPrimario ? "#FFFFFF" : COLORES.primario;
+  const tamañoIcono = tamaño === "sm" ? 15 : tamaño === "lg" ? 20 : 17;
 
   return (
     <TouchableOpacity
@@ -54,15 +67,16 @@ export default function Boton({
       activeOpacity={0.8}
       accessibilityRole="button"
     >
-      {cargando
-        ? <ActivityIndicator color={esPrimario ? '#FFFFFF' : COLORES.primario} />
-        : (
-          <View style={estilos.contenido}>
-            {icono ? <Icono nombre={icono} tamaño={tamañoIcono} color={colorIcono} /> : null}
-            <Text style={[estilos.texto, obtenerEstiloTexto()]}>{titulo}</Text>
-          </View>
-        )
-      }
+      {cargando ? (
+        <ActivityIndicator color={esPrimario ? "#FFFFFF" : COLORES.primario} />
+      ) : (
+        <View style={estilos.contenido}>
+          {icono ? (
+            <Icono nombre={icono} tamaño={tamañoIcono} color={colorIcono} />
+          ) : null}
+          <Text style={[estilos.texto, obtenerEstiloTexto()]}>{titulo}</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -72,13 +86,13 @@ const estilos = StyleSheet.create({
     paddingHorizontal: ESPACIADO.lg,
     paddingVertical: ESPACIADO.sm + 4,
     borderRadius: RADIO.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minHeight: 50,
   },
   contenido: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
   },
   tamañoChico: {
@@ -107,16 +121,16 @@ const estilos = StyleSheet.create({
     borderColor: COLORES.borde,
   },
   contorno: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: COLORES.primario,
   },
   fantasma: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   texto: {},
   textoPrimario: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 15,
     fontFamily: FUENTES.extrabold,
     letterSpacing: 0.3,

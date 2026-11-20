@@ -1,17 +1,25 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { COLORES, ESPACIADO, FUENTES } from '../constants/theme';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { COLORES, ESPACIADO, FUENTES } from "../constants/theme";
 
 /**
  * Encabezado de pantalla estandarizado: kicker en mayúsculas,
  * título display grande y descripción opcional.
  */
-export default function EncabezadoPantalla({ kicker, titulo, descripcion, estilo, centro }) {
+export default function EncabezadoPantalla({
+  kicker,
+  titulo,
+  descripcion,
+  estilo,
+  centro,
+}) {
   return (
     <View style={[estilos.contenedor, centro && estilos.centro, estilo]}>
       {kicker ? <Text style={estilos.kicker}>{kicker}</Text> : null}
       <Text style={estilos.titulo}>{titulo}</Text>
-      {descripcion ? <Text style={estilos.descripcion}>{descripcion}</Text> : null}
+      {descripcion ? (
+        <Text style={estilos.descripcion}>{descripcion}</Text>
+      ) : null}
     </View>
   );
 }
@@ -21,7 +29,7 @@ const estilos = StyleSheet.create({
     marginBottom: ESPACIADO.lg,
   },
   centro: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   kicker: {
     color: COLORES.acentoOscuro,

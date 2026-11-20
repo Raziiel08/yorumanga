@@ -1,12 +1,25 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icono from './Icono';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../constants/theme';
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Icono from "./Icono";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../constants/theme";
 
 /**
  * Chip pill reutilizable para filtros y categorías.
  */
-export default function Chip({ texto, icono, activo = false, alPresionar, compacto = false, estilo }) {
+export default function Chip({
+  texto,
+  icono,
+  activo = false,
+  alPresionar,
+  compacto = false,
+  estilo,
+}) {
   return (
     <TouchableOpacity
       onPress={alPresionar}
@@ -25,10 +38,16 @@ export default function Chip({ texto, icono, activo = false, alPresionar, compac
         <Icono
           nombre={icono}
           tamaño={compacto ? 13 : 15}
-          color={activo ? '#FFFFFF' : COLORES.primario}
+          color={activo ? "#FFFFFF" : COLORES.primario}
         />
       ) : null}
-      <Text style={[estilos.texto, compacto && estilos.textoCompacto, activo && estilos.textoActivo]}>
+      <Text
+        style={[
+          estilos.texto,
+          compacto && estilos.textoCompacto,
+          activo && estilos.textoActivo,
+        ]}
+      >
         {texto}
       </Text>
     </TouchableOpacity>
@@ -44,8 +63,8 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORES.borde,
     backgroundColor: COLORES.superficie,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.xs,
     ...SOMBRAS.sm,
   },
@@ -66,6 +85,6 @@ const estilos = StyleSheet.create({
     fontSize: 13,
   },
   textoActivo: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 });

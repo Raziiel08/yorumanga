@@ -1,12 +1,32 @@
-import React from 'react';
-import { useAuth } from '../../context/ContextoAuth';
-import PanelOperativo from '../../components/PanelOperativo';
+import React from "react";
+import { useAuth } from "../../context/ContextoAuth";
+import PanelOperativo from "../../components/PanelOperativo";
 
 const ACCESOS = [
-  { titulo: 'Ver ventas', pantalla: 'Ventas', icono: 'trending-up', descripcion: 'Revisá las ventas registradas.' },
-  { titulo: 'Nueva venta', pantalla: 'NuevaVenta', icono: 'add', descripcion: 'Cargá una venta en pocos pasos.' },
-  { titulo: 'Clientes', pantalla: 'Clientes', icono: 'person-add', descripcion: 'Encontrá y administrá clientes.' },
-  { titulo: 'Productos', pantalla: 'Productos', icono: 'library', descripcion: 'Consultá el catálogo disponible.' },
+  {
+    titulo: "Ver ventas",
+    pantalla: "Ventas",
+    icono: "trending-up",
+    descripcion: "Revisá las ventas registradas.",
+  },
+  {
+    titulo: "Nueva venta",
+    pantalla: "NuevaVenta",
+    icono: "add",
+    descripcion: "Cargá una venta en pocos pasos.",
+  },
+  {
+    titulo: "Clientes",
+    pantalla: "Clientes",
+    icono: "person-add",
+    descripcion: "Encontrá y administrá clientes.",
+  },
+  {
+    titulo: "Productos",
+    pantalla: "Productos",
+    icono: "library",
+    descripcion: "Consultá el catálogo disponible.",
+  },
 ];
 
 export default function PantallaVendedorInicio({ navigation }) {

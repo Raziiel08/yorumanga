@@ -1,13 +1,13 @@
-import React from 'react';
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useAuth } from '../context/ContextoAuth';
-import AuthStack from './PilaAuth';
-import ClienteStack from './PilaCliente';
-import AdminStack from './PilaAdmin';
-import VendedorStack from './PilaVendedor';
-import DepositoStack from './PilaDeposito';
-import { COLORS } from '../constants/theme';
+import React from "react";
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useAuth } from "../context/ContextoAuth";
+import AuthStack from "./PilaAuth";
+import ClienteStack from "./PilaCliente";
+import AdminStack from "./PilaAdmin";
+import VendedorStack from "./PilaVendedor";
+import DepositoStack from "./PilaDeposito";
+import { COLORS } from "../constants/theme";
 
 const temaNavegacion = {
   ...DefaultTheme,
@@ -22,10 +22,7 @@ const temaNavegacion = {
 };
 
 export default function AppNavigator() {
-  const {
-    user,
-    cargando
-  } = useAuth();
+  const { user, cargando } = useAuth();
   if (cargando) {
     return (
       <View style={estilos.cargando}>
@@ -36,11 +33,11 @@ export default function AppNavigator() {
 
   const Navegacion = !user
     ? AuthStack
-    : user.rol === 'admin'
+    : user.rol === "admin"
       ? AdminStack
-      : user.rol === 'vendedor'
+      : user.rol === "vendedor"
         ? VendedorStack
-        : user.rol === 'deposito'
+        : user.rol === "deposito"
           ? DepositoStack
           : ClienteStack;
 
@@ -62,15 +59,15 @@ const estilos = StyleSheet.create({
   },
   marco: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: 1440,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: COLORS.background,
   },
   cargando: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: COLORS.background,
   },
 });

@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { COLORES, ESPACIADO, FUENTES, RADIO } from '../constants/theme';
+import React, { useState } from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
+import { COLORES, ESPACIADO, FUENTES, RADIO } from "../constants/theme";
 
-export default function Entrada({ etiqueta, errorMensaje, estilo, estiloEntrada, ...props }) {
+export default function Entrada({
+  etiqueta,
+  errorMensaje,
+  estilo,
+  estiloEntrada,
+  ...props
+}) {
   const [enfocado, setEnfocado] = useState(false);
 
   return (
@@ -20,7 +26,9 @@ export default function Entrada({ etiqueta, errorMensaje, estilo, estiloEntrada,
         onBlur={() => setEnfocado(false)}
         {...props}
       />
-      {errorMensaje ? <Text style={estilos.textoError}>{errorMensaje}</Text> : null}
+      {errorMensaje ? (
+        <Text style={estilos.textoError}>{errorMensaje}</Text>
+      ) : null}
     </View>
   );
 }

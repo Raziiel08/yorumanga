@@ -1,7 +1,7 @@
-import { Alert as NativeAlert, Platform } from 'react-native';
+import { Alert as NativeAlert, Platform } from "react-native";
 
 function mostrarAlertaWeb(titulo, mensaje, botones) {
-  const texto = [titulo, mensaje].filter(Boolean).join('\n\n');
+  const texto = [titulo, mensaje].filter(Boolean).join("\n\n");
   const opciones = Array.isArray(botones) ? botones : [];
 
   if (opciones.length === 0) {
@@ -15,7 +15,7 @@ function mostrarAlertaWeb(titulo, mensaje, botones) {
     return;
   }
 
-  const cancelar = opciones.find((boton) => boton.style === 'cancel');
+  const cancelar = opciones.find((boton) => boton.style === "cancel");
   const acciones = opciones.filter((boton) => boton !== cancelar);
   if (acciones.length === 1) {
     if (globalThis.confirm(texto)) acciones[0].onPress?.();
@@ -23,8 +23,12 @@ function mostrarAlertaWeb(titulo, mensaje, botones) {
     return;
   }
 
-  const lista = acciones.map((boton, indice) => `${indice + 1}. ${boton.text}`).join('\n');
-  const respuesta = globalThis.prompt(`${texto}\n\n${lista}\n\nIngresá el número de una opción:`);
+  const lista = acciones
+    .map((boton, indice) => `${indice + 1}. ${boton.text}`)
+    .join("\n");
+  const respuesta = globalThis.prompt(
+    `${texto}\n\n${lista}\n\nIngresá el número de una opción:`,
+  );
   if (respuesta === null) {
     cancelar?.onPress?.();
     return;
@@ -32,12 +36,12 @@ function mostrarAlertaWeb(titulo, mensaje, botones) {
 
   const opcion = acciones[Number(respuesta) - 1];
   if (opcion) opcion.onPress?.();
-  else globalThis.alert('Opción inválida. No se realizó ningún cambio.');
+  else globalThis.alert("Opción inválida. No se realizó ningún cambio.");
 }
 
 export const Alert = {
   alert(titulo, mensaje, botones) {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === "web") {
       mostrarAlertaWeb(titulo, mensaje, botones);
       return;
     }

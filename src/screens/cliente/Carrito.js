@@ -1,40 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator,
-} from 'react-native';
-import Icono from '../../components/Icono';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import { useCart } from '../../context/ContextoCarrito';
-import { useAuth } from '../../context/ContextoAuth';
-import { useResponsive } from '../../hooks/useResponsivo';
-import { ordersService } from '../../services/pedidos';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { formatearMoneda } from '../../utils/moneda';
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import Icono from "../../components/Icono";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import { useCart } from "../../context/ContextoCarrito";
+import { useAuth } from "../../context/ContextoAuth";
+import { useResponsive } from "../../hooks/useResponsivo";
+import { ordersService } from "../../services/pedidos";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { formatearMoneda } from "../../utils/moneda";
 
 export default function PantallaCarrito({ navigation }) {
   const { items, removeItem, updateQty, clear, total } = useCart();
   const { user } = useAuth();
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const { esEscritorio, anchoMaxContenido } = useResponsive();
 
-  const confirmarPedido = async () => {
-    if (items.length === 0 || !user) return;
-    setCargando(true);
-    setError('');
-    try {
-      await ordersService.createOrder(items);
-      clear();
-      navigation.navigate('MisPedidos');
-    } catch (e) {
-      setError(e.message || 'No se pudo confirmar el pedido.');
-    } finally {
-      setCargando(false);
+  const irAlPago = () => {
+    if (items.length === 0) return;
+    if (!user) {
+      navigation.navigate("Login");
+      return;
     }
+    navigation.navigate("Pago");
   };
 
-  const listaProductos = items.length > 0
-    ? (
+  const listaProductos =
+    items.length > 0 ? (
       <View>
         {items.map((item) => (
           <View key={item.product.id} style={estilos.tarjeta}>
@@ -47,36 +52,56 @@ export default function PantallaCarrito({ navigation }) {
                 />
               ) : (
                 <View style={[estilos.portada, estilos.portadaVacia]}>
-                  <Icono nombre="book" tamaño={20} color={COLORES.primarioLight} />
+                  <Icono
+                    nombre="book"
+                    tamaño={20}
+                    color={COLORES.primarioLight}
+                  />
                 </View>
               )}
             </View>
 
             <View style={estilos.contenidoTarjeta}>
               <View style={estilos.encabezadoTarjeta}>
-                <Text style={estilos.tituloTarjeta} numberOfLines={2}>{item.product.titulo}</Text>
+                <Text style={estilos.tituloTarjeta} numberOfLines={2}>
+                  {item.product.titulo}
+                </Text>
                 <TouchableOpacity
                   onPress={() => removeItem(item.product.id)}
                   style={estilos.botonEliminar}
                   accessibilityLabel={`Quitar ${item.product.titulo} del carrito`}
                 >
-                  <Icono nombre="trash-outline" tamaño={17} color={COLORES.error} />
+                  <Icono
+                    nombre="trash-outline"
+                    tamaño={17}
+                    color={COLORES.error}
+                  />
                 </TouchableOpacity>
               </View>
-              <Text style={estilos.subtituloTarjeta}>{item.product.genero}</Text>
+              <Text style={estilos.subtituloTarjeta}>
+                {item.product.genero}
+              </Text>
               <View style={estilos.pieTarjeta}>
                 <View style={estilos.controlCantidad}>
                   <TouchableOpacity
                     style={estilos.botonCantidad}
-                    onPress={() => updateQty(item.product.id, item.cantidad - 1)}
+                    onPress={() =>
+                      updateQty(item.product.id, item.cantidad - 1)
+                    }
                     accessibilityLabel="Reducir cantidad"
                   >
-                    <Icono nombre="remove" tamaño={15} color={COLORES.primario} />
+                    <Icono
+                      nombre="remove"
+                      tamaño={15}
+                      color={COLORES.primario}
+                    />
                   </TouchableOpacity>
                   <Text style={estilos.cantidad}>{item.cantidad}</Text>
                   <TouchableOpacity
                     style={estilos.botonCantidad}
-                    onPress={() => updateQty(item.product.id, item.cantidad + 1)}
+                    onPress={() =>
+                      updateQty(item.product.id, item.cantidad + 1)
+                    }
                     accessibilityLabel="Aumentar cantidad"
                   >
                     <Icono nombre="add" tamaño={15} color={COLORES.primario} />
@@ -90,21 +115,24 @@ export default function PantallaCarrito({ navigation }) {
           </View>
         ))}
       </View>
-    )
-    : (
-        <View style={estilos.contenedorVacio}>
-          <View style={estilos.iconoVacioContenedor}>
-            <Icono nombre="cart-outline" tamaño={34} color={COLORES.primarioLight} />
-          </View>
-          <Text style={estilos.textoVacio}>Tu carrito está vacío</Text>
-          <TouchableOpacity
-            style={estilos.botonVerCatalogo}
-            onPress={() => navigation.navigate('Catálogo')}
-            activeOpacity={0.85}
-          >
-            <Text style={estilos.textoVerCatalogo}>Explorar catálogo</Text>
-          </TouchableOpacity>
+    ) : (
+      <View style={estilos.contenedorVacio}>
+        <View style={estilos.iconoVacioContenedor}>
+          <Icono
+            nombre="cart-outline"
+            tamaño={34}
+            color={COLORES.primarioLight}
+          />
         </View>
+        <Text style={estilos.textoVacio}>Tu carrito está vacío</Text>
+        <TouchableOpacity
+          style={estilos.botonVerCatalogo}
+          onPress={() => navigation.navigate("Catálogo")}
+          activeOpacity={0.85}
+        >
+          <Text style={estilos.textoVerCatalogo}>Explorar catálogo</Text>
+        </TouchableOpacity>
+      </View>
     );
 
   const resumen = (
@@ -112,44 +140,48 @@ export default function PantallaCarrito({ navigation }) {
       <Text style={estilos.tituloResumen}>Resumen</Text>
       <View style={estilos.filaResumen}>
         <Text style={estilos.etiquetaResumen}>
-          {items.length} producto{items.length !== 1 ? 's' : ''}
+          {items.length} producto{items.length !== 1 ? "s" : ""}
         </Text>
         <Text style={estilos.total}>{formatearMoneda(total)}</Text>
       </View>
       <View style={estilos.separador} />
       <TouchableOpacity
-        style={[estilos.botonConfirmar, (cargando || !user || items.length === 0) && estilos.botonConfirmarDeshabilitado]}
-        onPress={confirmarPedido}
-        disabled={cargando || items.length === 0 || !user}
+        style={[
+          estilos.botonConfirmar,
+          items.length === 0 && estilos.botonConfirmarDeshabilitado,
+        ]}
+        onPress={irAlPago}
+        disabled={items.length === 0}
         activeOpacity={0.85}
       >
-        {cargando
-          ? <ActivityIndicator color="#FFFFFF" />
-          : (
-            <View style={estilos.filaConfirmar}>
-              <Icono nombre="checkmark-circle" tamaño={18} color="#FFFFFF" />
-              <Text style={estilos.textoConfirmar}>Confirmar pedido</Text>
-            </View>
-          )
-        }
+        <View style={estilos.filaConfirmar}>
+          <Icono nombre="card-outline" tamaño={20} color="#FFFFFF" />
+          <Text style={estilos.textoConfirmar}>Proceder al Pago</Text>
+        </View>
       </TouchableOpacity>
       {!user ? (
         <TouchableOpacity
           style={estilos.avisoSesion}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate("Login")}
           activeOpacity={0.8}
           accessibilityRole="button"
         >
-          <Icono nombre="information-circle-outline" tamaño={16} color={COLORES.advertencia} />
+          <Icono
+            nombre="information-circle-outline"
+            tamaño={16}
+            color={COLORES.advertencia}
+          />
           <Text style={estilos.textoAvisoSesion}>
-            Iniciá sesión para confirmar el pedido — tocar acá
+            Iniciá sesión para realizar el pago — tocar acá
           </Text>
         </TouchableOpacity>
       ) : null}
       {error ? (
         <View style={estilos.avisoError}>
           <Icono nombre="alert-circle" tamaño={16} color={COLORES.error} />
-          <Text style={estilos.textoAvisoError} numberOfLines={3}>{error}</Text>
+          <Text style={estilos.textoAvisoError} numberOfLines={3}>
+            {error}
+          </Text>
         </View>
       ) : null}
     </View>
@@ -163,18 +195,25 @@ export default function PantallaCarrito({ navigation }) {
           titulo="Tu carrito"
           descripcion="Revisá las cantidades antes de confirmar tu pedido."
         />
-        <View style={[
-          estilos.distribucion,
-          { flexDirection: esEscritorio ? 'row' : 'column' },
-        ]}>
-          <View style={esEscritorio ? { flex: 2, minWidth: 0 } : { minWidth: 0 }}>
+        <View
+          style={[
+            estilos.distribucion,
+            { flexDirection: esEscritorio ? "row" : "column" },
+          ]}
+        >
+          <View
+            style={esEscritorio ? { flex: 2, minWidth: 0 } : { minWidth: 0 }}
+          >
             {listaProductos}
           </View>
           {items.length > 0 && (
-            <View style={esEscritorio
-              ? { flex: 1, marginLeft: ESPACIADO.lg }
-              : { marginTop: ESPACIADO.md }
-            }>
+            <View
+              style={
+                esEscritorio
+                  ? { flex: 1, marginLeft: ESPACIADO.lg }
+                  : { marginTop: ESPACIADO.md }
+              }
+            >
               {resumen}
             </View>
           )}
@@ -190,11 +229,11 @@ const estilos = StyleSheet.create({
     backgroundColor: COLORES.fondo,
   },
   contenido: {
-    width: '100%',
+    width: "100%",
     padding: ESPACIADO.lg,
   },
   distribucion: {
-    width: '100%',
+    width: "100%",
   },
   tarjeta: {
     backgroundColor: COLORES.superficie,
@@ -203,7 +242,7 @@ const estilos = StyleSheet.create({
     marginBottom: ESPACIADO.sm,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -219,8 +258,8 @@ const estilos = StyleSheet.create({
     borderColor: COLORES.bordeSuave,
   },
   portadaVacia: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: COLORES.primarioTinte,
   },
   contenidoTarjeta: {
@@ -228,9 +267,9 @@ const estilos = StyleSheet.create({
     minWidth: 0,
   },
   encabezadoTarjeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
   },
   tituloTarjeta: {
@@ -251,17 +290,17 @@ const estilos = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: RADIO.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   pieTarjeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   controlCantidad: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.xs,
     backgroundColor: COLORES.fondo,
     borderRadius: RADIO.sm,
@@ -273,15 +312,15 @@ const estilos = StyleSheet.create({
   botonCantidad: {
     width: 32,
     height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   cantidad: {
     color: COLORES.texto,
     fontSize: 15,
     fontFamily: FUENTES.extrabold,
     minWidth: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   precioTarjeta: {
     color: COLORES.primario,
@@ -305,9 +344,9 @@ const estilos = StyleSheet.create({
     marginBottom: ESPACIADO.md,
   },
   filaResumen: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
   etiquetaResumen: {
     color: COLORES.textoSecundario,
@@ -330,8 +369,8 @@ const estilos = StyleSheet.create({
     backgroundColor: COLORES.primario,
     paddingVertical: ESPACIADO.md,
     borderRadius: RADIO.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minHeight: 52,
     ...SOMBRAS.sm,
   },
@@ -339,13 +378,13 @@ const estilos = StyleSheet.create({
     opacity: 0.6,
   },
   filaConfirmar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   avisoSesion: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     marginTop: ESPACIADO.sm,
     padding: ESPACIADO.sm,
@@ -360,8 +399,8 @@ const estilos = StyleSheet.create({
     lineHeight: 17,
   },
   avisoError: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     marginTop: ESPACIADO.sm,
     padding: ESPACIADO.sm,
@@ -376,13 +415,13 @@ const estilos = StyleSheet.create({
     lineHeight: 17,
   },
   textoConfirmar: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: FUENTES.extrabold,
     fontSize: 15,
     letterSpacing: 0.3,
   },
   contenedorVacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   iconoVacioContenedor: {
@@ -390,13 +429,13 @@ const estilos = StyleSheet.create({
     height: 84,
     borderRadius: RADIO.full,
     backgroundColor: COLORES.primarioTinte,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
   },
   textoVacio: {
     color: COLORES.textoSecundario,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
     fontFamily: FUENTES.extrabold,
   },
@@ -409,7 +448,7 @@ const estilos = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   textoVerCatalogo: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: FUENTES.extrabold,
     fontSize: 14,
   },

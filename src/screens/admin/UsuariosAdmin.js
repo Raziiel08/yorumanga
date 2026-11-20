@@ -1,21 +1,33 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl,
-  Modal, useWindowDimensions,
-} from 'react-native';
-import { supabase } from '../../config/supabase';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { Alert } from '../../utils/alertas';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  Modal,
+  useWindowDimensions,
+} from "react-native";
+import { supabase } from "../../config/supabase";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { Alert } from "../../utils/alertas";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
 
-const ROLES = ['cliente', 'admin', 'vendedor', 'deposito'];
+const ROLES = ["cliente", "admin", "vendedor", "deposito"];
 const VARIANTE_ROL = {
-  cliente: 'neutro',
-  admin: 'primario',
-  vendedor: 'acentoSuave',
-  deposito: 'exito',
+  cliente: "neutro",
+  admin: "primario",
+  vendedor: "acentoSuave",
+  deposito: "exito",
 };
 
 export default function UsuariosAdminScreen() {
@@ -29,16 +41,16 @@ export default function UsuariosAdminScreen() {
   const load = useCallback(async () => {
     setCargando(true);
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('usuarios').select('*').order('creado_en', {
-        ascending: false
-      });
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("*")
+        .order("creado_en", {
+          ascending: false,
+        });
       if (error) throw error;
       setUsers(data);
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -48,7 +60,7 @@ export default function UsuariosAdminScreen() {
   }, [load]);
   const changeRole = async (role) => {
     try {
-      const { error } = await supabase.rpc('cambiar_rol_usuario', {
+      const { error } = await supabase.rpc("cambiar_rol_usuario", {
         p_usuario_id: usuarioSeleccionado.id,
         p_rol: role,
       });
@@ -56,12 +68,13 @@ export default function UsuariosAdminScreen() {
       setUsuarioSeleccionado(null);
       await load();
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     }
   };
   const filas = Math.ceil(users.length / columnas);
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <EncabezadoPantalla
           kicker="EQUIPO"
@@ -74,7 +87,11 @@ export default function UsuariosAdminScreen() {
           contentContainerStyle={styles.contenidoLista}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
+            <RefreshControl
+              refreshing={cargando}
+              onRefresh={load}
+              tintColor={COLORES.primario}
+            />
           }
         >
           {users.length > 0 ? (
@@ -83,25 +100,39 @@ export default function UsuariosAdminScreen() {
                 {users
                   .slice(indiceFila * columnas, (indiceFila + 1) * columnas)
                   .map((item) => (
-                    <View key={item.id} style={[styles.celda, { width: `${100 / columnas}%` }]}>
+                    <View
+                      key={item.id}
+                      style={[styles.celda, { width: `${100 / columnas}%` }]}
+                    >
                       <View style={styles.card}>
                         <View style={styles.cardCabecera}>
                           <View style={styles.avatar}>
                             <Text style={styles.avatarTexto}>
-                              {(item.nombre || item.email || '?').charAt(0).toUpperCase()}
+                              {(item.nombre || item.email || "?")
+                                .charAt(0)
+                                .toUpperCase()}
                             </Text>
                           </View>
                           <Etiqueta
                             texto={item.rol}
-                            variante={VARIANTE_ROL[item.rol] || 'neutro'}
+                            variante={VARIANTE_ROL[item.rol] || "neutro"}
                           />
                         </View>
                         <Text style={styles.cardTitle} numberOfLines={1}>
-                          {item.nombre || 'Sin nombre'}
+                          {item.nombre || "Sin nombre"}
                         </Text>
-                        <Text style={styles.cardText} numberOfLines={1}>{item.email}</Text>
-                        <TouchableOpacity style={styles.btnRol} onPress={() => setUsuarioSeleccionado(item)}>
-                          <Icono nombre="shield-checkmark-outline" tamaño={15} color={COLORES.primario} />
+                        <Text style={styles.cardText} numberOfLines={1}>
+                          {item.email}
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.btnRol}
+                          onPress={() => setUsuarioSeleccionado(item)}
+                        >
+                          <Icono
+                            nombre="shield-checkmark-outline"
+                            tamaño={15}
+                            color={COLORES.primario}
+                          />
                           <Text style={styles.btnRolTexto}>Cambiar rol</Text>
                         </TouchableOpacity>
                       </View>
@@ -112,10 +143,16 @@ export default function UsuariosAdminScreen() {
           ) : (
             <View style={styles.vacio}>
               <View style={styles.vacioIcono}>
-                <Icono nombre={cargando ? 'people' : 'search'} tamaño={34} color={COLORES.primarioClaro} />
+                <Icono
+                  nombre={cargando ? "people" : "search"}
+                  tamaño={34}
+                  color={COLORES.primarioClaro}
+                />
               </View>
               <Text style={styles.vacioTexto}>
-                {cargando ? 'Cargando usuarios…' : 'No hay usuarios registrados.'}
+                {cargando
+                  ? "Cargando usuarios…"
+                  : "No hay usuarios registrados."}
               </Text>
             </View>
           )}
@@ -130,7 +167,11 @@ export default function UsuariosAdminScreen() {
         <View style={styles.modalFondo}>
           <View style={styles.modal}>
             <View style={styles.modalCabecera}>
-              <Icono nombre="shield-checkmark" tamaño={22} color={COLORES.primario} />
+              <Icono
+                nombre="shield-checkmark"
+                tamaño={22}
+                color={COLORES.primario}
+              />
               <Text style={styles.modalTitulo}>Cambiar rol</Text>
             </View>
             <Text style={styles.modalTexto} numberOfLines={1}>
@@ -145,19 +186,30 @@ export default function UsuariosAdminScreen() {
                 ]}
                 onPress={() => changeRole(role)}
               >
-                <Etiqueta texto={role} variante={VARIANTE_ROL[role] || 'neutro'} />
+                <Etiqueta
+                  texto={role}
+                  variante={VARIANTE_ROL[role] || "neutro"}
+                />
                 {usuarioSeleccionado?.rol === role && (
-                  <Icono nombre="checkmark-circle" tamaño={18} color={COLORES.exito} />
+                  <Icono
+                    nombre="checkmark-circle"
+                    tamaño={18}
+                    color={COLORES.exito}
+                  />
                 )}
               </TouchableOpacity>
             ))}
-            <TouchableOpacity style={styles.cancelar} onPress={() => setUsuarioSeleccionado(null)}>
+            <TouchableOpacity
+              style={styles.cancelar}
+              onPress={() => setUsuarioSeleccionado(null)}
+            >
               <Text style={styles.cancelarTexto}>Cancelar</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -167,8 +219,8 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
@@ -182,7 +234,7 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xl,
   },
   fila: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
   },
   celda: {
@@ -197,9 +249,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.sm,
   },
@@ -208,8 +260,8 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: RADIO.completo,
     backgroundColor: COLORES.primarioTinte,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   avatarTexto: {
     color: COLORES.primario,
@@ -228,9 +280,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   btnRol: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     backgroundColor: COLORES.primarioTinte,
     borderRadius: RADIO.md,
@@ -243,7 +295,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   vacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   vacioIcono: {
@@ -253,8 +305,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -262,11 +314,11 @@ const styles = StyleSheet.create({
     color: COLORES.textoSecundario,
     fontFamily: FUENTES.medio,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
   modalFondo: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: ESPACIADO.lg,
     backgroundColor: COLORES.overlay,
   },
@@ -279,8 +331,8 @@ const styles = StyleSheet.create({
     ...SOMBRAS.lg,
   },
   modalCabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.xs,
   },
@@ -297,9 +349,9 @@ const styles = StyleSheet.create({
     marginBottom: ESPACIADO.md,
   },
   opcionRol: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: ESPACIADO.sm + 2,
     paddingHorizontal: ESPACIADO.md,
     marginBottom: ESPACIADO.xs,
@@ -313,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.exitoClaro,
   },
   cancelar: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: ESPACIADO.md,
   },
   cancelarTexto: {

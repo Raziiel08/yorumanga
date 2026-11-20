@@ -1,25 +1,36 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl,
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
   useWindowDimensions,
-} from 'react-native';
-import { supabase } from '../../config/supabase';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { Alert } from '../../utils/alertas';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
+} from "react-native";
+import { supabase } from "../../config/supabase";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { Alert } from "../../utils/alertas";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
 
-const ESTADOS = ['pendiente', 'visto', 'agregado'];
+const ESTADOS = ["pendiente", "visto", "agregado"];
 const VARIANTE_ESTADO = {
-  pendiente: 'advertencia',
-  visto: 'info',
-  agregado: 'exito',
+  pendiente: "advertencia",
+  visto: "info",
+  agregado: "exito",
 };
 const NOMBRE_ESTADO = {
-  pendiente: 'Pendiente',
-  visto: 'Visto',
-  agregado: 'Agregado',
+  pendiente: "Pendiente",
+  visto: "Visto",
+  agregado: "Agregado",
 };
 
 export default function SolicitudesAdminScreen() {
@@ -32,16 +43,16 @@ export default function SolicitudesAdminScreen() {
   const load = useCallback(async () => {
     setCargando(true);
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('solicitudes_manga').select('*, user:usuarios(*)').order('creado_en', {
-        ascending: false
-      });
+      const { data, error } = await supabase
+        .from("solicitudes_manga")
+        .select("*, user:usuarios(*)")
+        .order("creado_en", {
+          ascending: false,
+        });
       if (error) throw error;
       setItems(data);
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -51,21 +62,23 @@ export default function SolicitudesAdminScreen() {
   }, [load]);
   const changeStatus = async (id, estado) => {
     try {
-      const {
-        error
-      } = await supabase.from('solicitudes_manga').update({
-        estado,
-        actualizado_en: new Date().toISOString()
-      }).eq('id', id);
+      const { error } = await supabase
+        .from("solicitudes_manga")
+        .update({
+          estado,
+          actualizado_en: new Date().toISOString(),
+        })
+        .eq("id", id);
       if (error) throw error;
       load();
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     }
   };
   const filas = Math.ceil(items.length / columnas);
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <EncabezadoPantalla
           kicker="BANDEJA"
@@ -78,7 +91,11 @@ export default function SolicitudesAdminScreen() {
           contentContainerStyle={styles.contenidoLista}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
+            <RefreshControl
+              refreshing={cargando}
+              onRefresh={load}
+              tintColor={COLORES.primario}
+            />
           }
         >
           {items.length > 0 ? (
@@ -87,7 +104,10 @@ export default function SolicitudesAdminScreen() {
                 {items
                   .slice(indiceFila * columnas, (indiceFila + 1) * columnas)
                   .map((item) => (
-                    <View key={item.id} style={[styles.celda, { width: `${100 / columnas}%` }]}>
+                    <View
+                      key={item.id}
+                      style={[styles.celda, { width: `${100 / columnas}%` }]}
+                    >
                       <View style={styles.card}>
                         <View style={styles.cardCabecera}>
                           <Text style={styles.cardTitle} numberOfLines={2}>
@@ -95,14 +115,20 @@ export default function SolicitudesAdminScreen() {
                           </Text>
                           <Etiqueta
                             texto={NOMBRE_ESTADO[item.estado] || item.estado}
-                            variante={VARIANTE_ESTADO[item.estado] || 'neutro'}
+                            variante={VARIANTE_ESTADO[item.estado] || "neutro"}
                           />
                         </View>
                         <Text style={styles.cardText} numberOfLines={1}>
-                          Solicita: {item.user?.nombre || item.user?.email || item.usuario_id}
+                          Solicita:{" "}
+                          {item.user?.nombre ||
+                            item.user?.email ||
+                            item.usuario_id}
                         </Text>
                         {item.observaciones && (
-                          <Text style={styles.cardObservacion} numberOfLines={3}>
+                          <Text
+                            style={styles.cardObservacion}
+                            numberOfLines={3}
+                          >
                             “{item.observaciones}”
                           </Text>
                         )}
@@ -112,14 +138,16 @@ export default function SolicitudesAdminScreen() {
                               key={estado}
                               style={[
                                 styles.chipEstado,
-                                item.estado === estado && styles.chipEstadoActual,
+                                item.estado === estado &&
+                                  styles.chipEstadoActual,
                               ]}
                               onPress={() => changeStatus(item.id, estado)}
                             >
                               <Text
                                 style={[
                                   styles.chipEstadoTexto,
-                                  item.estado === estado && styles.chipEstadoTextoActual,
+                                  item.estado === estado &&
+                                    styles.chipEstadoTextoActual,
                                 ]}
                               >
                                 {NOMBRE_ESTADO[estado]}
@@ -135,16 +163,23 @@ export default function SolicitudesAdminScreen() {
           ) : (
             <View style={styles.vacio}>
               <View style={styles.vacioIcono}>
-                <Icono nombre={cargando ? 'mail' : 'mail-open'} tamaño={34} color={COLORES.primarioClaro} />
+                <Icono
+                  nombre={cargando ? "mail" : "mail-open"}
+                  tamaño={34}
+                  color={COLORES.primarioClaro}
+                />
               </View>
               <Text style={styles.vacioTexto}>
-                {cargando ? 'Cargando solicitudes…' : 'No hay solicitudes pendientes.'}
+                {cargando
+                  ? "Cargando solicitudes…"
+                  : "No hay solicitudes pendientes."}
               </Text>
             </View>
           )}
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -154,8 +189,8 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
@@ -169,7 +204,7 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xl,
   },
   fila: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
   },
   celda: {
@@ -184,9 +219,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.xs,
   },
@@ -215,8 +250,8 @@ const styles = StyleSheet.create({
     borderColor: COLORES.bordeSuave,
   },
   acciones: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: ESPACIADO.xs,
     marginTop: ESPACIADO.sm,
     paddingTop: ESPACIADO.sm,
@@ -241,10 +276,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   chipEstadoTextoActual: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   vacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   vacioIcono: {
@@ -254,8 +289,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -263,6 +298,6 @@ const styles = StyleSheet.create({
     color: COLORES.textoSecundario,
     fontFamily: FUENTES.medio,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

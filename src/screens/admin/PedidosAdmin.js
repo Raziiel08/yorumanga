@@ -1,28 +1,39 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl,
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
   useWindowDimensions,
-} from 'react-native';
-import { ordersService } from '../../services/pedidos';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { Alert } from '../../utils/alertas';
-import { formatearMoneda } from '../../utils/moneda';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
+} from "react-native";
+import { ordersService } from "../../services/pedidos";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { Alert } from "../../utils/alertas";
+import { formatearMoneda } from "../../utils/moneda";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
 
-const ESTADOS = ['pendiente', 'en_proceso', 'completado', 'cancelado'];
+const ESTADOS = ["pendiente", "en_proceso", "completado", "cancelado"];
 const VARIANTE_ESTADO = {
-  pendiente: 'advertencia',
-  en_proceso: 'info',
-  completado: 'exito',
-  cancelado: 'error',
+  pendiente: "advertencia",
+  en_proceso: "info",
+  completado: "exito",
+  cancelado: "error",
 };
 const NOMBRE_ESTADO = {
-  pendiente: 'Pendiente',
-  en_proceso: 'En proceso',
-  completado: 'Completado',
-  cancelado: 'Cancelado',
+  pendiente: "Pendiente",
+  en_proceso: "En proceso",
+  completado: "Completado",
+  cancelado: "Cancelado",
 };
 
 export default function PedidosAdminScreen() {
@@ -37,7 +48,7 @@ export default function PedidosAdminScreen() {
     try {
       setOrders(await ordersService.getAll());
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -45,22 +56,27 @@ export default function PedidosAdminScreen() {
   useEffect(() => {
     load();
   }, [load]);
-  const changeStatus = order => {
-    Alert.alert('Cambiar estado', 'Seleccioná el nuevo estado', ESTADOS.map(e => ({
-      text: e,
-      onPress: async () => {
-        try {
-          await ordersService.updateStatus(order.id, e);
-          load();
-        } catch (err) {
-          Alert.alert('Error', err.message);
-        }
-      }
-    })));
+  const changeStatus = (order) => {
+    Alert.alert(
+      "Cambiar estado",
+      "Seleccioná el nuevo estado",
+      ESTADOS.map((e) => ({
+        text: e,
+        onPress: async () => {
+          try {
+            await ordersService.updateStatus(order.id, e);
+            load();
+          } catch (err) {
+            Alert.alert("Error", err.message);
+          }
+        },
+      })),
+    );
   };
   const filas = Math.ceil(orders.length / columnas);
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <EncabezadoPantalla
           kicker="OPERACIONES"
@@ -73,7 +89,11 @@ export default function PedidosAdminScreen() {
           contentContainerStyle={styles.contenidoLista}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
+            <RefreshControl
+              refreshing={cargando}
+              onRefresh={load}
+              tintColor={COLORES.primario}
+            />
           }
         >
           {orders.length > 0 ? (
@@ -82,27 +102,48 @@ export default function PedidosAdminScreen() {
                 {orders
                   .slice(indiceFila * columnas, (indiceFila + 1) * columnas)
                   .map((item) => (
-                    <View key={item.id} style={[styles.celda, { width: `${100 / columnas}%` }]}>
+                    <View
+                      key={item.id}
+                      style={[styles.celda, { width: `${100 / columnas}%` }]}
+                    >
                       <View style={styles.card}>
                         <View style={styles.cardCabecera}>
-                          <Text style={styles.cardTitle}>Pedido #{item.id.slice(0, 8)}</Text>
+                          <Text style={styles.cardTitle}>
+                            Pedido #{item.id.slice(0, 8)}
+                          </Text>
                           <Etiqueta
                             texto={NOMBRE_ESTADO[item.estado] || item.estado}
-                            variante={VARIANTE_ESTADO[item.estado] || 'neutro'}
+                            variante={VARIANTE_ESTADO[item.estado] || "neutro"}
                           />
                         </View>
                         <Text style={styles.cardText} numberOfLines={1}>
-                          Cliente: {item.user?.nombre || item.user?.email || item.usuario_id}
+                          Cliente:{" "}
+                          {item.user?.nombre ||
+                            item.user?.email ||
+                            item.usuario_id}
                         </Text>
                         <Text style={styles.cardText}>
                           {new Date(item.creado_en).toLocaleString()}
                         </Text>
                         <View style={styles.pieCard}>
-                          <Text style={styles.cardPrecio}>{formatearMoneda(item.total)}</Text>
-                          {!['completado', 'cancelado'].includes(item.estado) ? (
-                            <TouchableOpacity style={styles.btnEstado} onPress={() => changeStatus(item)}>
-                              <Icono nombre="swap-horizontal" tamaño={15} color="#FFFFFF" />
-                              <Text style={styles.btnEstadoTexto}>Cambiar estado</Text>
+                          <Text style={styles.cardPrecio}>
+                            {formatearMoneda(item.total)}
+                          </Text>
+                          {!["completado", "cancelado"].includes(
+                            item.estado,
+                          ) ? (
+                            <TouchableOpacity
+                              style={styles.btnEstado}
+                              onPress={() => changeStatus(item)}
+                            >
+                              <Icono
+                                nombre="swap-horizontal"
+                                tamaño={15}
+                                color="#FFFFFF"
+                              />
+                              <Text style={styles.btnEstadoTexto}>
+                                Cambiar estado
+                              </Text>
                             </TouchableOpacity>
                           ) : null}
                         </View>
@@ -114,16 +155,21 @@ export default function PedidosAdminScreen() {
           ) : (
             <View style={styles.vacio}>
               <View style={styles.vacioIcono}>
-                <Icono nombre={cargando ? 'bag-handle' : 'search'} tamaño={34} color={COLORES.primarioClaro} />
+                <Icono
+                  nombre={cargando ? "bag-handle" : "search"}
+                  tamaño={34}
+                  color={COLORES.primarioClaro}
+                />
               </View>
               <Text style={styles.vacioTexto}>
-                {cargando ? 'Cargando pedidos…' : 'No hay pedidos todavía.'}
+                {cargando ? "Cargando pedidos…" : "No hay pedidos todavía."}
               </Text>
             </View>
           )}
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -133,8 +179,8 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
@@ -148,7 +194,7 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xl,
   },
   fila: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
   },
   celda: {
@@ -163,9 +209,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.xs,
   },
@@ -182,9 +228,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   pieCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginTop: ESPACIADO.sm,
     paddingTop: ESPACIADO.sm,
@@ -197,8 +243,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   btnEstado: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     backgroundColor: COLORES.info,
     paddingHorizontal: ESPACIADO.sm + 2,
@@ -206,12 +252,12 @@ const styles = StyleSheet.create({
     borderRadius: RADIO.completo,
   },
   btnEstadoTexto: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: FUENTES.bold,
     fontSize: 12,
   },
   vacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   vacioIcono: {
@@ -221,8 +267,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -230,6 +276,6 @@ const styles = StyleSheet.create({
     color: COLORES.textoSecundario,
     fontFamily: FUENTES.medio,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

@@ -1,19 +1,28 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl,
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
   useWindowDimensions,
-} from 'react-native';
-import { Alert } from '../../utils/alertas';
-import { productsService } from '../../services/productos';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import Boton from '../../components/Boton';
+} from "react-native";
+import { Alert } from "../../utils/alertas";
+import { productsService } from "../../services/productos";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import Boton from "../../components/Boton";
 
-export default function StockScreen({
-  navigation
-}) {
+export default function StockScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [cargando, setCargando] = useState(false);
   const { width } = useWindowDimensions();
@@ -25,7 +34,7 @@ export default function StockScreen({
     try {
       setProducts(await productsService.getAll());
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -35,7 +44,8 @@ export default function StockScreen({
   }, [load]);
   const filas = Math.ceil(products.length / columnas);
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <EncabezadoPantalla
           kicker="INVENTARIO"
@@ -48,7 +58,11 @@ export default function StockScreen({
           contentContainerStyle={styles.contenidoLista}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
+            <RefreshControl
+              refreshing={cargando}
+              onRefresh={load}
+              tintColor={COLORES.primario}
+            />
           }
         >
           {products.length > 0 ? (
@@ -57,20 +71,31 @@ export default function StockScreen({
                 {products
                   .slice(indiceFila * columnas, (indiceFila + 1) * columnas)
                   .map((item) => (
-                    <View key={item.id} style={[styles.celda, { width: `${100 / columnas}%` }]}>
+                    <View
+                      key={item.id}
+                      style={[styles.celda, { width: `${100 / columnas}%` }]}
+                    >
                       <View style={styles.card}>
                         <View style={styles.cardCabecera}>
-                          <Text style={styles.cardTitle} numberOfLines={2}>{item.titulo}</Text>
+                          <Text style={styles.cardTitle} numberOfLines={2}>
+                            {item.titulo}
+                          </Text>
                           <Etiqueta
-                            texto={item.stock > 0 ? `${item.stock} disp.` : 'Sin stock'}
-                            variante={item.stock > 0 ? 'exito' : 'error'}
+                            texto={
+                              item.stock > 0
+                                ? `${item.stock} disp.`
+                                : "Sin stock"
+                            }
+                            variante={item.stock > 0 ? "exito" : "error"}
                           />
                         </View>
                         <View style={styles.datosFila}>
-                          <Text style={styles.cardText}>{item.genero || 'Sin género'}</Text>
+                          <Text style={styles.cardText}>
+                            {item.genero || "Sin género"}
+                          </Text>
                           <Etiqueta
-                            texto={item.activo ? 'Activo' : 'Inactivo'}
-                            variante={item.activo ? 'neutro' : 'advertencia'}
+                            texto={item.activo ? "Activo" : "Inactivo"}
+                            variante={item.activo ? "neutro" : "advertencia"}
                           />
                         </View>
                         <Boton
@@ -78,9 +103,11 @@ export default function StockScreen({
                           icono="swap-horizontal"
                           variante="secundario"
                           tamaño="sm"
-                          alPresionar={() => navigation.navigate('MovimientoStock', {
-                            product: item
-                          })}
+                          alPresionar={() =>
+                            navigation.navigate("MovimientoStock", {
+                              product: item,
+                            })
+                          }
                           estilo={styles.botonMovimiento}
                         />
                       </View>
@@ -91,16 +118,21 @@ export default function StockScreen({
           ) : (
             <View style={styles.vacio}>
               <View style={styles.vacioIcono}>
-                <Icono nombre={cargando ? 'cube' : 'search'} tamaño={34} color={COLORES.primarioClaro} />
+                <Icono
+                  nombre={cargando ? "cube" : "search"}
+                  tamaño={34}
+                  color={COLORES.primarioClaro}
+                />
               </View>
               <Text style={styles.vacioTexto}>
-                {cargando ? 'Cargando stock…' : 'No hay productos con stock.'}
+                {cargando ? "Cargando stock…" : "No hay productos con stock."}
               </Text>
             </View>
           )}
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -110,8 +142,8 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
@@ -125,7 +157,7 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xl,
   },
   fila: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
   },
   celda: {
@@ -140,9 +172,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.xs,
   },
@@ -158,9 +190,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   datosFila: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginTop: ESPACIADO.xs,
   },
@@ -168,7 +200,7 @@ const styles = StyleSheet.create({
     marginTop: ESPACIADO.sm,
   },
   vacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   vacioIcono: {
@@ -178,8 +210,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -187,6 +219,6 @@ const styles = StyleSheet.create({
     color: COLORES.textoSecundario,
     fontFamily: FUENTES.medio,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

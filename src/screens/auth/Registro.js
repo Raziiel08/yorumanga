@@ -1,75 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  KeyboardAvoidingView, Platform, ScrollView,
-} from 'react-native';
-import { useAuth } from '../../context/ContextoAuth';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { useAuth } from "../../context/ContextoAuth";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
 import {
   correoValido,
   validarCamposObligatorios,
   validarContrasena,
-} from '../../utils/validaciones';
-import Icono from '../../components/Icono';
-import LogoMarca from '../../components/LogoMarca';
+  validarErrorCorreo,
+} from "../../utils/validaciones";
+import Icono from "../../components/Icono";
+import LogoMarca from "../../components/LogoMarca";
+
+const ROLES = [
+  { valor: "cliente",   etiqueta: "Cliente",   icono: "person",        descripcion: "Comprá mangas online" },
+  { valor: "vendedor",  etiqueta: "Vendedor",   icono: "cash",          descripcion: "Ventas en mostrador" },
+  { valor: "deposito",  etiqueta: "Depósito",   icono: "cube",          descripcion: "Stock y proveedores" },
+  { valor: "admin",     etiqueta: "Admin",      icono: "settings",      descripcion: "Gestión total" },
+];
 
 export default function PantallaRegistro({ navigation }) {
-  const [nombre, setNombre] = useState('');
-  const [correo, setCorreo] = useState('');
-  const [contrasena, setContrasena] = useState('');
-  const [confirmarContrasena, setConfirmarContrasena] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [confirmarContrasena, setConfirmarContrasena] = useState("");
   const [verContrasena, setVerContrasena] = useState(false);
   const [verConfirmar, setVerConfirmar] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [campoEnfocado, setCampoEnfocado] = useState(null);
   const [mensaje, setMensaje] = useState(null);
+  const [rolSeleccionado, setRolSeleccionado] = useState("cliente");
   const { signUp } = useAuth();
 
   const manejarRegistro = async () => {
     const errorRequerido = validarCamposObligatorios([
-      { nombre: 'Nombre', valor: nombre },
-      { nombre: 'Correo electrónico', valor: correo },
-      { nombre: 'Contraseña', valor: contrasena },
-      { nombre: 'Confirmar contraseña', valor: confirmarContrasena },
+      { nombre: "Nombre", valor: nombre },
+      { nombre: "Correo electrónico", valor: correo },
+      { nombre: "Contraseña", valor: contrasena },
+      { nombre: "Confirmar contraseña", valor: confirmarContrasena },
     ]);
     if (errorRequerido) {
-      setMensaje({ tipo: 'error', texto: errorRequerido });
+      setMensaje({ tipo: "error", texto: errorRequerido });
       return;
     }
-    if (!correoValido(correo)) {
-      setMensaje({ tipo: 'error', texto: 'Ingresá un correo electrónico válido.' });
+    const errorCorreo = validarErrorCorreo(correo);
+    if (errorCorreo) {
+      setMensaje({
+        tipo: "error",
+        texto: errorCorreo,
+      });
       return;
     }
     if (contrasena !== confirmarContrasena) {
-      setMensaje({ tipo: 'error', texto: 'Las contraseñas no coinciden.' });
+      setMensaje({ tipo: "error", texto: "Las contraseñas no coinciden." });
       return;
     }
     const errorPass = validarContrasena(contrasena);
     if (errorPass) {
-      setMensaje({ tipo: 'error', texto: errorPass });
+      setMensaje({ tipo: "error", texto: errorPass });
       return;
     }
     setMensaje(null);
     setCargando(true);
     try {
-      const { error } = await signUp(correo.trim(), contrasena, nombre.trim());
+      const { error } = await signUp(
+        correo.trim(),
+        contrasena,
+        nombre.trim(),
+        rolSeleccionado
+      );
       if (error) {
-        console.error('signUp error:', error);
+        console.error("signUp error:", error);
         setMensaje({
-          tipo: 'error',
-          texto: error.message || 'No se pudo crear la cuenta. Intentá nuevamente.',
+          tipo: "error",
+          texto:
+            error.message || "No se pudo crear la cuenta. Intentá nuevamente.",
         });
       } else {
+        const rolLabel = ROLES.find((r) => r.valor === rolSeleccionado)?.etiqueta || rolSeleccionado;
         setMensaje({
-          tipo: 'exito',
-          texto: 'Cuenta creada. Si te solicita confirmar el correo, revisá tu bandeja de entrada; después iniciá sesión.',
+          tipo: "exito",
+          texto: `Cuenta creada como ${rolLabel}. Si se solicita confirmación de correo, revisá tu bandeja; después iniciá sesión.`,
         });
       }
     } catch (e) {
-      console.error('manejarRegistro exception:', e);
+      console.error("manejarRegistro exception:", e);
       setMensaje({
-        tipo: 'error',
-        texto: e.message || 'No se pudo crear la cuenta. Intentá nuevamente.',
+        tipo: "error",
+        texto: e.message || "No se pudo crear la cuenta. Intentá nuevamente.",
       });
     } finally {
       setCargando(false);
@@ -85,7 +117,10 @@ export default function PantallaRegistro({ navigation }) {
     <View style={estilos.grupoCampo} key={etiqueta}>
       <Text style={estilos.etiquetaCampo}>{etiqueta}</Text>
       <TextInput
-        style={[estilos.entrada, campoEnfocado === etiqueta && estilos.entradaEnfocada]}
+        style={[
+          estilos.entrada,
+          campoEnfocado === etiqueta && estilos.entradaEnfocada,
+        ]}
         placeholder={etiqueta}
         placeholderTextColor={COLORES.textoAtenuado}
         value={valor}
@@ -100,7 +135,7 @@ export default function PantallaRegistro({ navigation }) {
   return (
     <KeyboardAvoidingView
       style={estilos.contenedor}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
         contentContainerStyle={estilos.scroll}
@@ -121,23 +156,60 @@ export default function PantallaRegistro({ navigation }) {
             <View
               style={[
                 estilos.mensaje,
-                mensaje.tipo === 'error' ? estilos.mensajeError : estilos.mensajeExito,
+                mensaje.tipo === "error"
+                  ? estilos.mensajeError
+                  : estilos.mensajeExito,
               ]}
             >
-              <Text style={[
-                estilos.textoMensaje,
-                mensaje.tipo === 'error' ? estilos.textoMensajeError : estilos.textoMensajeExito,
-              ]}>
+              <Text
+                style={[
+                  estilos.textoMensaje,
+                  mensaje.tipo === "error"
+                    ? estilos.textoMensajeError
+                    : estilos.textoMensajeExito,
+                ]}
+              >
                 {mensaje.texto}
               </Text>
             </View>
           )}
 
-          {renderCampo('Nombre', nombre, setNombre)}
-          {renderCampo('Correo electrónico', correo, setCorreo, {
-            autoCapitalize: 'none',
-            keyboardType: 'email-address',
+          {renderCampo("Nombre", nombre, setNombre)}
+          {renderCampo("Correo electrónico", correo, setCorreo, {
+            autoCapitalize: "none",
+            keyboardType: "email-address",
           })}
+
+          {/* ── SELECTOR DE ROL ── */}
+          <View style={estilos.grupoCampo}>
+            <Text style={estilos.etiquetaCampo}>Tipo de cuenta</Text>
+            <View style={estilos.filaRoles}>
+              {ROLES.map((rol) => {
+                const activo = rolSeleccionado === rol.valor;
+                return (
+                  <TouchableOpacity
+                    key={rol.valor}
+                    style={[estilos.tarjetaRol, activo && estilos.tarjetaRolActiva]}
+                    onPress={() => setRolSeleccionado(rol.valor)}
+                    activeOpacity={0.75}
+                  >
+                    <Icono
+                      nombre={rol.icono}
+                      tamaño={22}
+                      color={activo ? COLORES.primario : COLORES.textoAtenuado}
+                    />
+                    <Text style={[estilos.textoRol, activo && estilos.textoRolActivo]}>
+                      {rol.etiqueta}
+                    </Text>
+                    <Text style={[estilos.descripcionRol, activo && estilos.descripcionRolActiva]}>
+                      {rol.descripcion}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
           <View style={estilos.grupoCampo}>
             <Text style={estilos.etiquetaCampo}>Contraseña</Text>
             <View style={estilos.filaEntrada}>
@@ -149,11 +221,18 @@ export default function PantallaRegistro({ navigation }) {
                 onChangeText={cambiarCampo(setContrasena)}
                 secureTextEntry={!verContrasena}
                 autoCapitalize="none"
-                onFocus={() => setCampoEnfocado('Contraseña')}
+                onFocus={() => setCampoEnfocado("Contraseña")}
                 onBlur={() => setCampoEnfocado(null)}
               />
-              <TouchableOpacity style={estilos.botonOjo} onPress={() => setVerContrasena(!verContrasena)}>
-                <Icono nombre={verContrasena ? 'eye-off' : 'eye'} tamaño={18} color={COLORES.primario} />
+              <TouchableOpacity
+                style={estilos.botonOjo}
+                onPress={() => setVerContrasena(!verContrasena)}
+              >
+                <Icono
+                  nombre={verContrasena ? "eye-off" : "eye"}
+                  tamaño={18}
+                  color={COLORES.primario}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -169,11 +248,18 @@ export default function PantallaRegistro({ navigation }) {
                 onChangeText={cambiarCampo(setConfirmarContrasena)}
                 secureTextEntry={!verConfirmar}
                 autoCapitalize="none"
-                onFocus={() => setCampoEnfocado('Confirmar contraseña')}
+                onFocus={() => setCampoEnfocado("Confirmar contraseña")}
                 onBlur={() => setCampoEnfocado(null)}
               />
-              <TouchableOpacity style={estilos.botonOjo} onPress={() => setVerConfirmar(!verConfirmar)}>
-                <Icono nombre={verConfirmar ? 'eye-off' : 'eye'} tamaño={18} color={COLORES.primario} />
+              <TouchableOpacity
+                style={estilos.botonOjo}
+                onPress={() => setVerConfirmar(!verConfirmar)}
+              >
+                <Icono
+                  nombre={verConfirmar ? "eye-off" : "eye"}
+                  tamaño={18}
+                  color={COLORES.primario}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -185,16 +271,16 @@ export default function PantallaRegistro({ navigation }) {
             activeOpacity={0.85}
           >
             <Text style={estilos.textoBoton}>
-              {cargando ? 'Registrando...' : 'Crear cuenta'}
+              {cargando ? "Registrando..." : "Crear cuenta"}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={estilos.contenedorEnlace}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate("Login")}
           >
             <Text style={estilos.textoEnlace}>
-              ¿Ya tenés cuenta?{' '}
+              ¿Ya tenés cuenta?{" "}
               <Text style={estilos.textoEnlaceNegrita}>Iniciá sesión</Text>
             </Text>
           </TouchableOpacity>
@@ -211,13 +297,13 @@ const estilos = StyleSheet.create({
   },
   scroll: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: ESPACIADO.lg,
     paddingVertical: ESPACIADO.xxl,
   },
   encabezado: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: ESPACIADO.xl,
   },
   logoContenedor: {
@@ -226,7 +312,7 @@ const estilos = StyleSheet.create({
     paddingHorizontal: ESPACIADO.sm,
     paddingVertical: ESPACIADO.xs,
     marginBottom: ESPACIADO.xs,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   logoSlogan: {
     fontSize: 14,
@@ -235,8 +321,8 @@ const estilos = StyleSheet.create({
     letterSpacing: 0.5,
   },
   tarjeta: {
-    width: '100%',
-    maxWidth: 420,
+    width: "100%",
+    maxWidth: 460,
     backgroundColor: COLORES.superficie,
     padding: ESPACIADO.xl,
     borderRadius: RADIO.xl,
@@ -301,11 +387,51 @@ const estilos = StyleSheet.create({
     borderColor: COLORES.primario,
     backgroundColor: COLORES.superficie,
   },
+  // ── Selector de roles ──
+  filaRoles: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: ESPACIADO.sm,
+  },
+  tarjetaRol: {
+    flex: 1,
+    minWidth: "44%",
+    alignItems: "center",
+    padding: ESPACIADO.md,
+    borderRadius: RADIO.md,
+    borderWidth: 1.5,
+    borderColor: COLORES.borde,
+    backgroundColor: COLORES.fondo,
+    gap: ESPACIADO.xs,
+  },
+  tarjetaRolActiva: {
+    borderColor: COLORES.primario,
+    backgroundColor: COLORES.primarioTinte,
+  },
+  textoRol: {
+    fontSize: 13,
+    fontFamily: FUENTES.extrabold,
+    color: COLORES.textoSecundario,
+    textAlign: "center",
+  },
+  textoRolActivo: {
+    color: COLORES.primario,
+  },
+  descripcionRol: {
+    fontSize: 11,
+    fontFamily: FUENTES.medio,
+    color: COLORES.textoAtenuado,
+    textAlign: "center",
+  },
+  descripcionRolActiva: {
+    color: COLORES.primarioClaro,
+  },
+  // ─────────────────────
   boton: {
     backgroundColor: COLORES.primario,
     paddingVertical: ESPACIADO.md,
     borderRadius: RADIO.sm,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: ESPACIADO.sm,
     ...SOMBRAS.sm,
   },
@@ -313,14 +439,14 @@ const estilos = StyleSheet.create({
     opacity: 0.6,
   },
   textoBoton: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: FUENTES.extrabold,
     fontSize: 15,
     letterSpacing: 0.3,
   },
   contenedorEnlace: {
     marginTop: ESPACIADO.lg,
-    alignItems: 'center',
+    alignItems: "center",
   },
   textoEnlace: {
     color: COLORES.textoSecundario,
@@ -332,17 +458,12 @@ const estilos = StyleSheet.create({
     fontFamily: FUENTES.extrabold,
   },
   filaEntrada: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
   },
   botonOjo: {
     paddingHorizontal: ESPACIADO.sm,
     paddingVertical: 10,
-  },
-  textoOjo: {
-    color: COLORES.primario,
-    fontWeight: '700',
-    fontSize: 13,
   },
 });

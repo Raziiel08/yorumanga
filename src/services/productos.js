@@ -1,40 +1,32 @@
-import { supabase } from '../config/supabase';
+import { supabase } from "../config/supabase";
 export const productsService = {
   async getAll(activeOnly = false) {
-    let query = supabase.from('productos').select('*').order('creado_en', {
-      ascending: false
+    let query = supabase.from("productos").select("*").order("creado_en", {
+      ascending: false,
     });
-    if (activeOnly) query = query.eq('activo', true);
-    const {
-      data,
-      error
-    } = await query;
+    if (activeOnly) query = query.eq("activo", true);
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   },
   async getById(id) {
-    const {
-      data,
-      error
-    } = await supabase.from('productos').select('*').eq('id', id).single();
+    const { data, error } = await supabase
+      .from("productos")
+      .select("*")
+      .eq("id", id)
+      .single();
     if (error) throw error;
     return data;
   },
   async getBestSelling(limit = 8) {
-    const {
-      data,
-      error
-    } = await supabase.rpc('productos_mas_vendidos', {
-      p_limite: limit
+    const { data, error } = await supabase.rpc("productos_mas_vendidos", {
+      p_limite: limit,
     });
     if (error) throw error;
     return data;
   },
   async create(product) {
-    const {
-      data,
-      error
-    } = await supabase.rpc('crear_producto', {
+    const { data, error } = await supabase.rpc("crear_producto", {
       p_titulo: product.titulo,
       p_imagen: product.imagen || null,
       p_precio: product.precio,
@@ -47,22 +39,26 @@ export const productsService = {
       p_precio_anterior: product.precio_anterior ?? null,
       p_destacado: product.destacado ?? false,
     });
-    if (error?.code === 'PGRST202') {
-      throw new Error('Supabase no encuentra crear_producto. Ejecutá supabase/SQL_SETUP.sql en el proyecto y volvé a intentar.');
+    if (error?.code === "PGRST202") {
+      throw new Error(
+        "Supabase no encuentra crear_producto. Ejecutá supabase/SQL_SETUP.sql en el proyecto y volvé a intentar.",
+      );
     }
     if (error) throw error;
     return this.getById(data);
   },
   async update(id, updates) {
-    if (Object.prototype.hasOwnProperty.call(updates, 'stock')) {
-      throw new Error('El stock solo se modifica desde Movimientos de stock');
+    if (Object.prototype.hasOwnProperty.call(updates, "stock")) {
+      throw new Error("El stock solo se modifica desde Movimientos de stock");
     }
-    const {
-      data,
-      error
-    } = await supabase.from('productos').update({
-      ...updates
-    }).eq('id', id).select().single();
+    const { data, error } = await supabase
+      .from("productos")
+      .update({
+        ...updates,
+      })
+      .eq("id", id)
+      .select()
+      .single();
     if (error) throw error;
     return data;
   },

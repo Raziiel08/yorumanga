@@ -1,38 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList,
-  ActivityIndicator, Image, KeyboardAvoidingView, Platform,
-} from 'react-native';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import { productsService } from '../../services/productos';
-import { aiService } from '../../services/ia';
-import { useCart } from '../../context/ContextoCarrito';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { Alert } from '../../utils/alertas';
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import { productsService } from "../../services/productos";
+import { aiService } from "../../services/ia";
+import { useCart } from "../../context/ContextoCarrito";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { Alert } from "../../utils/alertas";
 
 export default function RecomendadorIA({ navigation }) {
-  const [preferencias, setPreferencias] = useState('');
+  const [preferencias, setPreferencias] = useState("");
   const [results, setResults] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [enfocado, setEnfocado] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [agregados, setAgregados] = useState({});
   const { addItem } = useCart();
 
   const buscar = async () => {
     if (!preferencias.trim()) {
-      setError('Escribí qué te gusta leer para poder recomendarte.');
+      setError("Escribí qué te gusta leer para poder recomendarte.");
       return;
     }
     setCargando(true);
-    setError('');
+    setError("");
     try {
       const recs = await aiService.recommendProducts(preferencias);
       setResults(recs);
     } catch (e) {
-      setError(e.message || 'No se pudieron generar recomendaciones.');
+      setError(e.message || "No se pudieron generar recomendaciones.");
     } finally {
       setCargando(false);
     }
@@ -46,17 +60,20 @@ export default function RecomendadorIA({ navigation }) {
       if (p && p.stock > 0) {
         addItem(p);
         setAgregados((actuales) => ({ ...actuales, [indice]: true }));
-        setTimeout(() => setAgregados((actuales) => ({ ...actuales, [indice]: false })), 1800);
+        setTimeout(
+          () => setAgregados((actuales) => ({ ...actuales, [indice]: false })),
+          1800,
+        );
       }
     } catch (e) {
-      setError(e.message || 'No se pudo agregar al carrito.');
+      setError(e.message || "No se pudo agregar al carrito.");
     }
   };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <EncabezadoPantalla
         kicker="ASISTENTE DE LECTURA"
@@ -65,7 +82,12 @@ export default function RecomendadorIA({ navigation }) {
       />
 
       <View style={styles.tarjetaConsulta}>
-        <View style={[styles.contenedorInput, enfocado && styles.contenedorInputEnfocado]}>
+        <View
+          style={[
+            styles.contenedorInput,
+            enfocado && styles.contenedorInputEnfocado,
+          ]}
+        >
           <Icono nombre="sparkles" tamaño={17} color={COLORES.acentoOscuro} />
           <TextInput
             style={styles.input}
@@ -84,19 +106,21 @@ export default function RecomendadorIA({ navigation }) {
           disabled={cargando}
           activeOpacity={0.85}
         >
-          {cargando
-            ? <ActivityIndicator color="#FFFFFF" size="small" />
-            : (
-              <View style={styles.filaBoton}>
-                <Icono nombre="sparkles" tamaño={16} color="#FFFFFF" />
-                <Text style={styles.btnText}>Recomendar</Text>
-              </View>
-            )}
+          {cargando ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <View style={styles.filaBoton}>
+              <Icono nombre="sparkles" tamaño={16} color="#FFFFFF" />
+              <Text style={styles.btnText}>Recomendar</Text>
+            </View>
+          )}
         </TouchableOpacity>
         {error ? (
           <View style={styles.avisoError}>
             <Icono nombre="alert-circle" tamaño={15} color={COLORES.error} />
-            <Text style={styles.textoAvisoError} numberOfLines={3}>{error}</Text>
+            <Text style={styles.textoAvisoError} numberOfLines={3}>
+              {error}
+            </Text>
           </View>
         ) : null}
       </View>
@@ -107,17 +131,27 @@ export default function RecomendadorIA({ navigation }) {
         contentContainerStyle={styles.lista}
         renderItem={({ item, index }) => (
           <View style={styles.card}>
-            {item.imagen
-              ? <Image source={{ uri: item.imagen }} style={styles.cover} accessibilityLabel={`Portada de ${item.titulo}`} />
-              : (
-                <View style={[styles.cover, styles.coverVacia]}>
-                  <Icono nombre="book" tamaño={22} color={COLORES.primarioLight} />
-                </View>
-              )}
+            {item.imagen ? (
+              <Image
+                source={{ uri: item.imagen }}
+                style={styles.cover}
+                accessibilityLabel={`Portada de ${item.titulo}`}
+              />
+            ) : (
+              <View style={[styles.cover, styles.coverVacia]}>
+                <Icono
+                  nombre="book"
+                  tamaño={22}
+                  color={COLORES.primarioLight}
+                />
+              </View>
+            )}
             <View style={styles.contenidoCard}>
               <View style={styles.filaTitulo}>
                 <Text style={styles.cardTitle}>{item.titulo}</Text>
-                {item.en_catalogo && <Etiqueta texto="EN CATÁLOGO" variante="exito" />}
+                {item.en_catalogo && (
+                  <Etiqueta texto="EN CATÁLOGO" variante="exito" />
+                )}
               </View>
               {item.genero ? (
                 <Text style={styles.cardGenero}>Género: {item.genero}</Text>
@@ -125,31 +159,42 @@ export default function RecomendadorIA({ navigation }) {
               <Text style={styles.cardRazon}>{item.razon}</Text>
               {item.en_catalogo && (
                 <TouchableOpacity
-                  style={[styles.smallBtn, agregados[index] && styles.smallBtnAgregado]}
+                  style={[
+                    styles.smallBtn,
+                    agregados[index] && styles.smallBtnAgregado,
+                  ]}
                   onPress={() => agregar(item, index)}
                   activeOpacity={0.85}
                 >
-                  <Icono nombre={agregados[index] ? 'checkmark' : 'cart'} tamaño={14} color="#FFFFFF" />
+                  <Icono
+                    nombre={agregados[index] ? "checkmark" : "cart"}
+                    tamaño={14}
+                    color="#FFFFFF"
+                  />
                   <Text style={styles.smallBtnText}>
-                    {agregados[index] ? 'Agregado' : 'Agregar al carrito'}
+                    {agregados[index] ? "Agregado" : "Agregar al carrito"}
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
           </View>
         )}
-        ListEmptyComponent={(
+        ListEmptyComponent={
           <View style={styles.contenedorVacio}>
             <View style={styles.iconoVacioContenedor}>
-              <Icono nombre="sparkles-outline" tamaño={30} color={COLORES.primarioLight} />
+              <Icono
+                nombre="sparkles-outline"
+                tamaño={30}
+                color={COLORES.primarioLight}
+              />
             </View>
             <Text style={styles.empty}>
               {results.length === 0 && !cargando
                 ? 'Contá tus preferencias y presioná "Recomendar".'
-                : 'Buscando recomendaciones…'}
+                : "Buscando recomendaciones…"}
             </Text>
           </View>
-        )}
+        }
       />
     </KeyboardAvoidingView>
   );
@@ -158,9 +203,9 @@ export default function RecomendadorIA({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: 920,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: COLORES.fondo,
     padding: ESPACIADO.lg,
   },
@@ -174,8 +219,8 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   contenedorInput: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
     backgroundColor: COLORES.fondo,
     borderRadius: RADIO.md,
@@ -195,26 +240,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: FUENTES.medio,
     minHeight: 44,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   btn: {
     minHeight: 48,
     backgroundColor: COLORES.primario,
     borderRadius: RADIO.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     ...SOMBRAS.sm,
   },
   btnCargando: {
     opacity: 0.7,
   },
   filaBoton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   btnText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: FUENTES.extrabold,
     fontSize: 15,
   },
@@ -228,7 +273,7 @@ const styles = StyleSheet.create({
     marginBottom: ESPACIADO.sm,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -241,8 +286,8 @@ const styles = StyleSheet.create({
     borderColor: COLORES.bordeSuave,
   },
   coverVacia: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: COLORES.primarioTinte,
   },
   contenidoCard: {
@@ -250,9 +295,9 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   filaTitulo: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
     gap: ESPACIADO.sm,
   },
   cardTitle: {
@@ -277,22 +322,22 @@ const styles = StyleSheet.create({
   },
   smallBtn: {
     marginTop: ESPACIADO.sm,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     backgroundColor: COLORES.primario,
     paddingHorizontal: ESPACIADO.md,
     paddingVertical: ESPACIADO.xs + 2,
     borderRadius: RADIO.md,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   smallBtnText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: FUENTES.extrabold,
     fontSize: 13,
   },
   contenedorVacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xl,
   },
   iconoVacioContenedor: {
@@ -300,13 +345,13 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: RADIO.full,
     backgroundColor: COLORES.primarioTinte,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.sm,
   },
   empty: {
     color: COLORES.textoSecundario,
-    textAlign: 'center',
+    textAlign: "center",
     fontFamily: FUENTES.bold,
     maxWidth: 300,
   },

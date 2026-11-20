@@ -1,27 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  StyleSheet, Text, TextInput, TouchableOpacity, View,
-} from 'react-native';
-import Icono from './Icono';
-import LogoMarca from './LogoMarca';
-import { useCart } from '../context/ContextoCarrito';
-import { COLORES, ESPACIADO, FUENTES, RADIO } from '../constants/theme';
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Icono from "./Icono";
+import LogoMarca from "./LogoMarca";
+import { useCart } from "../context/ContextoCarrito";
+import { COLORES, ESPACIADO, FUENTES, RADIO } from "../constants/theme";
 
 const PARAMETROS_CATALOGO_LIMPIO = {
-  busqueda: '',
-  genero: '',
+  busqueda: "",
+  genero: "",
   soloOfertas: false,
   soloDestacados: false,
-  orden: 'recientes',
+  soloNovedades: false,
+  orden: "recientes",
 };
 
 export default function EncabezadoEscritorio({ navigation }) {
-  const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState("");
   const { items } = useCart();
-  const cantidadCarrito = items.reduce((total, item) => total + item.cantidad, 0);
+  const cantidadCarrito = items.reduce(
+    (total, item) => total + item.cantidad,
+    0,
+  );
 
   const navegar = (pantalla, params = {}) => {
-    navigation.navigate('HomeTabs', {
+    navigation.navigate("HomeTabs", {
       screen: pantalla,
       params: { ...PARAMETROS_CATALOGO_LIMPIO, ...params },
     });
@@ -32,27 +40,33 @@ export default function EncabezadoEscritorio({ navigation }) {
       <View style={styles.contenido}>
         <TouchableOpacity
           accessibilityLabel="Ir al inicio"
-          onPress={() => navegar('Inicio')}
+          onPress={() => navegar("Inicio")}
           style={styles.logo}
         >
           <LogoMarca ancho={128} />
         </TouchableOpacity>
 
         <View style={styles.navegacion}>
-          <TouchableOpacity onPress={() => navegar('Inicio')} style={styles.enlace}>
+          <TouchableOpacity
+            onPress={() => navegar("Inicio")}
+            style={styles.enlace}
+          >
             <Text style={styles.textoEnlace}>Inicio</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navegar('Catálogo')} style={styles.enlace}>
+          <TouchableOpacity
+            onPress={() => navegar("Catálogo")}
+            style={styles.enlace}
+          >
             <Text style={styles.textoEnlace}>Catálogo</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navegar('Catálogo', { orden: 'recientes' })}
+            onPress={() => navegar("Catálogo", { soloNovedades: true, orden: "recientes" })}
             style={styles.enlace}
           >
             <Text style={styles.textoEnlace}>Novedades</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navegar('Catálogo', { soloOfertas: true })}
+            onPress={() => navegar("Catálogo", { soloOfertas: true })}
             style={styles.enlace}
           >
             <Text style={styles.textoEnlace}>Ofertas</Text>
@@ -68,13 +82,13 @@ export default function EncabezadoEscritorio({ navigation }) {
             placeholderTextColor={COLORES.textoAtenuado}
             value={busqueda}
             onChangeText={setBusqueda}
-            onSubmitEditing={() => navegar('Catálogo', { busqueda })}
+            onSubmitEditing={() => navegar("Catálogo", { busqueda })}
             returnKeyType="search"
           />
           {busqueda.length > 0 && (
             <TouchableOpacity
               accessibilityLabel="Limpiar búsqueda"
-              onPress={() => setBusqueda('')}
+              onPress={() => setBusqueda("")}
             >
               <Icono nombre="close" tamaño={14} color="rgba(255,255,255,0.7)" />
             </TouchableOpacity>
@@ -83,7 +97,7 @@ export default function EncabezadoEscritorio({ navigation }) {
 
         <TouchableOpacity
           accessibilityLabel={`Carrito, ${cantidadCarrito} productos`}
-          onPress={() => navegar('Carrito')}
+          onPress={() => navegar("Carrito")}
           style={[styles.accion, styles.accionDestacada]}
         >
           <View style={styles.iconoAccionContenedor}>
@@ -98,10 +112,14 @@ export default function EncabezadoEscritorio({ navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
           accessibilityLabel="Abrir perfil"
-          onPress={() => navegar('Perfil')}
+          onPress={() => navegar("Perfil")}
           style={styles.accion}
         >
-          <Icono nombre="person-circle-outline" tamaño={26} color="rgba(255,255,255,0.82)" />
+          <Icono
+            nombre="person-circle-outline"
+            tamaño={26}
+            color="rgba(255,255,255,0.82)"
+          />
           <Text style={styles.textoAccion}>Perfil</Text>
         </TouchableOpacity>
       </View>
@@ -111,35 +129,35 @@ export default function EncabezadoEscritorio({ navigation }) {
 
 const styles = StyleSheet.create({
   encabezado: {
-    width: '100%',
+    width: "100%",
     minHeight: 84,
     backgroundColor: COLORES.primarioOscuro,
   },
   contenido: {
-    width: '100%',
+    width: "100%",
     maxWidth: 1440,
     minHeight: 84,
-    alignSelf: 'center',
+    alignSelf: "center",
     paddingHorizontal: ESPACIADO.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: ESPACIADO.md,
   },
   logo: {
     flexShrink: 0,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   navegacion: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.lg,
   },
   enlace: {
     paddingVertical: ESPACIADO.sm,
   },
   textoEnlace: {
-    color: 'rgba(255,255,255,0.82)',
+    color: "rgba(255,255,255,0.82)",
     fontSize: 14,
     fontFamily: FUENTES.extrabold,
   },
@@ -149,18 +167,18 @@ const styles = StyleSheet.create({
     minWidth: 150,
     height: 44,
     paddingHorizontal: ESPACIADO.md,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.xs,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: RADIO.completo,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
+    borderColor: "rgba(255,255,255,0.18)",
   },
   campoBusqueda: {
     flex: 1,
     minWidth: 0,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
     fontFamily: FUENTES.medio,
     paddingVertical: ESPACIADO.xs,
@@ -169,8 +187,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     minHeight: 44,
     paddingHorizontal: ESPACIADO.xs,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.xs,
   },
   accionDestacada: {
@@ -180,22 +198,22 @@ const styles = StyleSheet.create({
     minHeight: 42,
   },
   iconoAccionContenedor: {
-    position: 'relative',
+    position: "relative",
     width: 26,
     height: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   contadorCarrito: {
-    position: 'absolute',
+    position: "absolute",
     top: -6,
     right: -8,
     minWidth: 17,
     height: 17,
     borderRadius: RADIO.full,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 4,
   },
   textoContador: {
@@ -204,12 +222,12 @@ const styles = StyleSheet.create({
     fontFamily: FUENTES.extrabold,
   },
   textoAccionDestacada: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
     fontFamily: FUENTES.extrabold,
   },
   textoAccion: {
-    color: 'rgba(255,255,255,0.82)',
+    color: "rgba(255,255,255,0.82)",
     fontSize: 14,
     fontFamily: FUENTES.extrabold,
   },

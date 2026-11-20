@@ -1,42 +1,50 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import Icono from '../../components/Icono';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import Campo from '../../components/Campo';
-import Boton from '../../components/Boton';
-import { supabase } from '../../config/supabase';
-import { useAuth } from '../../context/ContextoAuth';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
+import React, { useState } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import Icono from "../../components/Icono";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import Campo from "../../components/Campo";
+import Boton from "../../components/Boton";
+import { supabase } from "../../config/supabase";
+import { useAuth } from "../../context/ContextoAuth";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
 
 export default function SolicitarMangaScreen({ navigation }) {
   const { user } = useAuth();
-  const [titulo, setTitulo] = useState('');
-  const [observaciones, setObservaciones] = useState('');
+  const [titulo, setTitulo] = useState("");
+  const [observaciones, setObservaciones] = useState("");
   const [cargando, setCargando] = useState(false);
-  const [errorTitulo, setErrorTitulo] = useState('');
-  const [error, setError] = useState('');
+  const [errorTitulo, setErrorTitulo] = useState("");
+  const [error, setError] = useState("");
 
   const save = async () => {
     if (!titulo.trim()) {
-      setErrorTitulo('Ingresá el título del manga que buscás.');
+      setErrorTitulo("Ingresá el título del manga que buscás.");
       return;
     }
     if (!user) {
-      setError('Iniciá sesión para enviar una solicitud.');
+      setError("Iniciá sesión para enviar una solicitud.");
       return;
     }
     setCargando(true);
-    setError('');
+    setError("");
     try {
-      const { error } = await supabase.from('solicitudes_manga').insert([{
-        usuario_id: user.id,
-        titulo_solicitado: titulo.trim(),
-        observaciones: observaciones.trim() || null,
-      }]);
+      const { error } = await supabase.from("solicitudes_manga").insert([
+        {
+          usuario_id: user.id,
+          titulo_solicitado: titulo.trim(),
+          observaciones: observaciones.trim() || null,
+        },
+      ]);
       if (error) throw error;
       navigation.goBack();
     } catch (e) {
-      setError(e.message || 'No se pudo enviar la solicitud.');
+      setError(e.message || "No se pudo enviar la solicitud.");
     } finally {
       setCargando(false);
     }
@@ -70,7 +78,7 @@ export default function SolicitarMangaScreen({ navigation }) {
           value={titulo}
           onChangeText={(texto) => {
             setTitulo(texto);
-            if (errorTitulo) setErrorTitulo('');
+            if (errorTitulo) setErrorTitulo("");
           }}
           errorMensaje={errorTitulo}
         />
@@ -83,9 +91,7 @@ export default function SolicitarMangaScreen({ navigation }) {
           numberOfLines={3}
           style={styles.campoObservaciones}
         />
-        {error ? (
-          <Text style={styles.textoError}>{error}</Text>
-        ) : null}
+        {error ? <Text style={styles.textoError}>{error}</Text> : null}
         <Boton
           titulo="Enviar solicitud"
           alPresionar={save}
@@ -100,17 +106,17 @@ export default function SolicitarMangaScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: 860,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: COLORES.fondo,
   },
   contenidoScroll: {
     padding: ESPACIADO.lg,
   },
   filaInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     backgroundColor: COLORES.primarioTinte,
     borderRadius: RADIO.md,
@@ -122,8 +128,8 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: RADIO.sm,
     backgroundColor: COLORES.superficie,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   textoInfo: {
     flex: 1,

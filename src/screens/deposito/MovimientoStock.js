@@ -1,43 +1,52 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Alert } from '../../utils/alertas';
-import Entrada from '../../components/Campo';
-import Boton from '../../components/Boton';
-import Icono from '../../components/Icono';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import { stockService } from '../../services/stock';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { Alert } from "../../utils/alertas";
+import Entrada from "../../components/Campo";
+import Boton from "../../components/Boton";
+import Icono from "../../components/Icono";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import { stockService } from "../../services/stock";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
 
-export default function MovimientoStockScreen({
-  route,
-  navigation
-}) {
+export default function MovimientoStockScreen({ route, navigation }) {
   const product = route.params.product;
-  const [tipo, setTipo] = useState('entrada');
-  const [cantidad, setCantidad] = useState('');
-  const [motivo, setMotivo] = useState('');
+  const [tipo, setTipo] = useState("entrada");
+  const [cantidad, setCantidad] = useState("");
+  const [motivo, setMotivo] = useState("");
   const [cargando, setCargando] = useState(false);
   const save = async () => {
     const qty = parseInt(cantidad, 10);
     if (isNaN(qty) || qty <= 0) {
-      Alert.alert('Error', 'Cantidad inválida');
+      Alert.alert("Error", "Cantidad inválida");
       return;
     }
     if (!motivo.trim()) {
-      Alert.alert('Error', 'El motivo es obligatorio');
+      Alert.alert("Error", "El motivo es obligatorio");
       return;
     }
     setCargando(true);
     try {
-      if (tipo === 'entrada') {
+      if (tipo === "entrada") {
         await stockService.registerEntry(product.id, qty, motivo);
       } else {
         await stockService.registerExit(product.id, qty, motivo);
       }
-      Alert.alert('Éxito', 'Movimiento registrado');
+      Alert.alert("Éxito", "Movimiento registrado");
       navigation.goBack();
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -64,42 +73,48 @@ export default function MovimientoStockScreen({
 
       <View style={styles.filaTipo}>
         <TouchableOpacity
-          style={[styles.botonTipo, tipo === 'entrada' && styles.botonTipoActivo]}
-          onPress={() => setTipo('entrada')}
+          style={[
+            styles.botonTipo,
+            tipo === "entrada" && styles.botonTipoActivo,
+          ]}
+          onPress={() => setTipo("entrada")}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityState={{ selected: tipo === 'entrada' }}
+          accessibilityState={{ selected: tipo === "entrada" }}
         >
           <Icono
             nombre="arrow-down-circle"
             tamaño={20}
-            color={tipo === 'entrada' ? '#FFFFFF' : COLORES.exito}
+            color={tipo === "entrada" ? "#FFFFFF" : COLORES.exito}
           />
           <Text
             style={[
               styles.textoTipo,
-              tipo === 'entrada' && styles.textoTipoActivo,
+              tipo === "entrada" && styles.textoTipoActivo,
             ]}
           >
             Entrada
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.botonTipo, tipo === 'salida' && styles.botonTipoActivoSalida]}
-          onPress={() => setTipo('salida')}
+          style={[
+            styles.botonTipo,
+            tipo === "salida" && styles.botonTipoActivoSalida,
+          ]}
+          onPress={() => setTipo("salida")}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityState={{ selected: tipo === 'salida' }}
+          accessibilityState={{ selected: tipo === "salida" }}
         >
           <Icono
             nombre="arrow-up-circle"
             tamaño={20}
-            color={tipo === 'salida' ? '#FFFFFF' : COLORES.error}
+            color={tipo === "salida" ? "#FFFFFF" : COLORES.error}
           />
           <Text
             style={[
               styles.textoTipo,
-              tipo === 'salida' && styles.textoTipoActivo,
+              tipo === "salida" && styles.textoTipoActivo,
             ]}
           >
             Salida
@@ -107,8 +122,19 @@ export default function MovimientoStockScreen({
         </TouchableOpacity>
       </View>
 
-      <Entrada etiqueta="Cantidad" placeholder="Unidades a mover" value={cantidad} onChangeText={setCantidad} keyboardType="numeric" />
-      <Entrada etiqueta="Motivo" placeholder="Descripción del movimiento" value={motivo} onChangeText={setMotivo} />
+      <Entrada
+        etiqueta="Cantidad"
+        placeholder="Unidades a mover"
+        value={cantidad}
+        onChangeText={setCantidad}
+        keyboardType="numeric"
+      />
+      <Entrada
+        etiqueta="Motivo"
+        placeholder="Descripción del movimiento"
+        value={motivo}
+        onChangeText={setMotivo}
+      />
 
       <Boton
         titulo="Registrar"
@@ -124,9 +150,9 @@ export default function MovimientoStockScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: 860,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: COLORES.fondo,
   },
   contenidoScroll: {
@@ -137,8 +163,8 @@ const styles = StyleSheet.create({
     marginBottom: ESPACIADO.md,
   },
   tarjetaStock: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     backgroundColor: COLORES.superficie,
     borderRadius: RADIO.lg,
@@ -161,15 +187,15 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   filaTipo: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
     marginBottom: ESPACIADO.md,
   },
   botonTipo: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: ESPACIADO.xs,
     padding: ESPACIADO.md,
     borderRadius: RADIO.md,
@@ -191,6 +217,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   textoTipoActivo: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 });

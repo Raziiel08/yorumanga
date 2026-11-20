@@ -1,26 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-  View, Text, StyleSheet, TouchableOpacity, ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
   useWindowDimensions,
-} from 'react-native';
-import { Alert } from '../../utils/alertas';
-import { productsService } from '../../services/productos';
-import { clientsService } from '../../services/clientes';
-import { salesService } from '../../services/ventas';
-import { useAuth } from '../../context/ContextoAuth';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { formatearMoneda } from '../../utils/moneda';
-import Icono from '../../components/Icono';
-import Chip from '../../components/Chip';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import Boton from '../../components/Boton';
+} from "react-native";
+import { Alert } from "../../utils/alertas";
+import { productsService } from "../../services/productos";
+import { clientsService } from "../../services/clientes";
+import { salesService } from "../../services/ventas";
+import { useAuth } from "../../context/ContextoAuth";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { formatearMoneda } from "../../utils/moneda";
+import Icono from "../../components/Icono";
+import Chip from "../../components/Chip";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import Boton from "../../components/Boton";
 
-export default function NuevaVentaScreen({
-  navigation
-}) {
-  const {
-    user
-  } = useAuth();
+export default function NuevaVentaScreen({ navigation }) {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -29,75 +35,100 @@ export default function NuevaVentaScreen({
   const { width } = useWindowDimensions();
   const anchoContenido = Math.min(width - ESPACIADO.lg * 2, 1080);
 
+  const cargarDatos = async () => {
+    try {
+      const [ps, cs] = await Promise.all([
+        productsService.getAll(true),
+        clientsService.getAll(),
+      ]);
+      setProducts(ps || []);
+      setClients(cs || []);
+    } catch (e) {
+      Alert.alert("Error", e.message);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        const [ps, cs] = await Promise.all([productsService.getAll(true), clientsService.getAll()]);
-        setProducts(ps);
-        setClients(cs);
-      } catch (e) {
-        Alert.alert('Error', e.message);
-      }
-    })();
+    cargarDatos();
   }, []);
-  const addToCart = product => {
-    setCarrito(prev => {
-      const existing = prev.find(c => c.product.id === product.id);
+
+  useEffect(() => {
+    const unsub = navigation.addListener("focus", cargarDatos);
+    return unsub;
+  }, [navigation]);
+  const addToCart = (product) => {
+    setCarrito((prev) => {
+      const existing = prev.find((c) => c.product.id === product.id);
       if (existing) {
         if (existing.cantidad + 1 > product.stock) {
-          Alert.alert('Stock', 'No hay suficiente stock');
+          Alert.alert("Stock", "No hay suficiente stock");
           return prev;
         }
-        return prev.map(c => c.product.id === product.id ? {
-          ...c,
-          cantidad: c.cantidad + 1
-        } : c);
+        return prev.map((c) =>
+          c.product.id === product.id
+            ? {
+                ...c,
+                cantidad: c.cantidad + 1,
+              }
+            : c,
+        );
       }
       if (product.stock < 1) {
-        Alert.alert('Stock', 'Producto sin stock');
+        Alert.alert("Stock", "Producto sin stock");
         return prev;
       }
-      return [...prev, {
-        product,
-        cantidad: 1
-      }];
+      return [
+        ...prev,
+        {
+          product,
+          cantidad: 1,
+        },
+      ];
     });
   };
-  const removeFromCart = productId => {
-    setCarrito(prev => prev.filter(c => c.product.id !== productId));
+  const removeFromCart = (productId) => {
+    setCarrito((prev) => prev.filter((c) => c.product.id !== productId));
   };
   const changeQty = (productId, delta) => {
-    setCarrito(prev => prev.map(c => {
-      if (c.product.id !== productId) return c;
-      const newQty = c.cantidad + delta;
-      if (newQty < 1) return c;
-      if (newQty > c.product.stock) {
-        Alert.alert('Stock', 'No hay suficiente stock');
-        return c;
-      }
-      return {
-        ...c,
-        cantidad: newQty
-      };
-    }));
+    setCarrito((prev) =>
+      prev.map((c) => {
+        if (c.product.id !== productId) return c;
+        const newQty = c.cantidad + delta;
+        if (newQty < 1) return c;
+        if (newQty > c.product.stock) {
+          Alert.alert("Stock", "No hay suficiente stock");
+          return c;
+        }
+        return {
+          ...c,
+          cantidad: newQty,
+        };
+      }),
+    );
   };
-  const total = carrito.reduce((acc, c) => acc + c.product.precio * c.cantidad, 0);
+  const total = carrito.reduce(
+    (acc, c) => acc + c.product.precio * c.cantidad,
+    0,
+  );
   const confirmar = async () => {
     if (carrito.length === 0) {
-      Alert.alert('Error', 'El carrito está vacío');
+      Alert.alert("Error", "El carrito está vacío");
       return;
     }
     if (!user) return;
     setCargando(true);
     try {
-      await salesService.createSale(selectedClient?.id || null, carrito.map(c => ({
-        product: c.product,
-        cantidad: c.cantidad
-      })));
-      Alert.alert('Éxito', 'Venta registrada');
+      await salesService.createSale(
+        selectedClient?.id || null,
+        carrito.map((c) => ({
+          product: c.product,
+          cantidad: c.cantidad,
+        })),
+      );
+      Alert.alert("Éxito", "Venta registrada");
       navigation.goBack();
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -110,7 +141,8 @@ export default function NuevaVentaScreen({
     </View>
   );
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <EncabezadoPantalla
           kicker="VENTA PRESENCIAL"
@@ -124,7 +156,7 @@ export default function NuevaVentaScreen({
           showsVerticalScrollIndicator
           keyboardShouldPersistTaps="handled"
         >
-          {encabezadoSeccion('person', 'Cliente (opcional)')}
+          {encabezadoSeccion("person", "Cliente")}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -132,13 +164,20 @@ export default function NuevaVentaScreen({
             contentContainerStyle={styles.contenidoChips}
           >
             <Chip
-              texto="Sin cliente"
+              texto="+ Nuevo cliente"
+              compacto
+              icono="person-add-outline"
+              activo={false}
+              alPresionar={() => navigation.navigate("ClienteForm", {})}
+            />
+            <Chip
+              texto="Consumidor final"
               compacto
               icono="person-outline"
               activo={!selectedClient}
               alPresionar={() => setSelectedClient(null)}
             />
-            {clients.map(c => (
+            {clients.map((c) => (
               <Chip
                 key={c.id}
                 texto={c.nombre}
@@ -149,66 +188,85 @@ export default function NuevaVentaScreen({
             ))}
           </ScrollView>
 
-          {encabezadoSeccion('library', 'Productos')}
-          {products.length > 0 ? products.map(p => (
-            <View key={p.id} style={styles.productRow}>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={styles.productTitle} numberOfLines={1}>{p.titulo}</Text>
-                <Text style={styles.productSub}>
-                  {formatearMoneda(p.precio)} · Stock: {p.stock}
-                </Text>
+          {encabezadoSeccion("library", "Productos")}
+          {products.length > 0 ? (
+            products.map((p) => (
+              <View key={p.id} style={styles.productRow}>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={styles.productTitle} numberOfLines={1}>
+                    {p.titulo}
+                  </Text>
+                  <Text style={styles.productSub}>
+                    {formatearMoneda(p.precio)} · Stock: {p.stock}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={[
+                    styles.botonAgregar,
+                    p.stock < 1 && styles.botonAgregarDeshabilitado,
+                  ]}
+                  onPress={() => addToCart(p)}
+                  disabled={p.stock < 1}
+                  activeOpacity={0.8}
+                  accessibilityLabel={`Agregar ${p.titulo} al carrito`}
+                >
+                  <Icono nombre="add" tamaño={18} color="#FFFFFF" />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={[styles.botonAgregar, p.stock < 1 && styles.botonAgregarDeshabilitado]}
-                onPress={() => addToCart(p)}
-                disabled={p.stock < 1}
-                activeOpacity={0.8}
-                accessibilityLabel={`Agregar ${p.titulo} al carrito`}
-              >
-                <Icono nombre="add" tamaño={18} color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
-          )) : (
+            ))
+          ) : (
             <Text style={styles.textoVacio}>Cargando productos…</Text>
           )}
 
-          {encabezadoSeccion('cart', 'Carrito')}
-          {carrito.length > 0 ? carrito.map(c => (
-            <View key={c.product.id} style={styles.cartRow}>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={styles.cartTitle} numberOfLines={1}>
-                  {c.product.titulo} ×{c.cantidad}
-                </Text>
-                <Text style={styles.productSub}>
-                  {formatearMoneda(c.product.precio * c.cantidad)}
-                </Text>
+          {encabezadoSeccion("cart", "Carrito")}
+          {carrito.length > 0 ? (
+            carrito.map((c) => (
+              <View key={c.product.id} style={styles.cartRow}>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={styles.cartTitle} numberOfLines={1}>
+                    {c.product.titulo} ×{c.cantidad}
+                  </Text>
+                  <Text style={styles.productSub}>
+                    {formatearMoneda(c.product.precio * c.cantidad)}
+                  </Text>
+                </View>
+                <View style={styles.qtyRow}>
+                  <TouchableOpacity
+                    style={styles.botonCantidad}
+                    onPress={() => changeQty(c.product.id, -1)}
+                    accessibilityLabel="Quitar una unidad"
+                  >
+                    <Icono
+                      nombre="remove"
+                      tamaño={16}
+                      color={COLORES.primario}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.botonCantidad}
+                    onPress={() => changeQty(c.product.id, 1)}
+                    accessibilityLabel="Agregar una unidad"
+                  >
+                    <Icono nombre="add" tamaño={16} color={COLORES.primario} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.botonCantidad, styles.botonEliminar]}
+                    onPress={() => removeFromCart(c.product.id)}
+                    accessibilityLabel="Quitar del carrito"
+                  >
+                    <Icono
+                      nombre="trash-outline"
+                      tamaño={16}
+                      color={COLORES.error}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={styles.qtyRow}>
-                <TouchableOpacity
-                  style={styles.botonCantidad}
-                  onPress={() => changeQty(c.product.id, -1)}
-                  accessibilityLabel="Quitar una unidad"
-                >
-                  <Icono nombre="remove" tamaño={16} color={COLORES.primario} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.botonCantidad}
-                  onPress={() => changeQty(c.product.id, 1)}
-                  accessibilityLabel="Agregar una unidad"
-                >
-                  <Icono nombre="add" tamaño={16} color={COLORES.primario} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.botonCantidad, styles.botonEliminar]}
-                  onPress={() => removeFromCart(c.product.id)}
-                  accessibilityLabel="Quitar del carrito"
-                >
-                  <Icono nombre="trash-outline" tamaño={16} color={COLORES.error} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          )) : (
-            <Text style={styles.textoVacio}>Todavía no sumaste productos a la venta.</Text>
+            ))
+          ) : (
+            <Text style={styles.textoVacio}>
+              Todavía no sumaste productos a la venta.
+            </Text>
           )}
 
           <View style={styles.resumenTotal}>
@@ -217,7 +275,7 @@ export default function NuevaVentaScreen({
           </View>
 
           <Boton
-            titulo={cargando ? 'Procesando...' : 'Confirmar venta'}
+            titulo={cargando ? "Procesando..." : "Confirmar venta"}
             icono="checkmark-circle"
             tamaño="lg"
             alPresionar={confirmar}
@@ -227,21 +285,22 @@ export default function NuevaVentaScreen({
           />
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: 1080,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: COLORES.fondo,
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezado: {
@@ -255,8 +314,8 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xxl,
   },
   cabeceraSeccion: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginTop: ESPACIADO.lg,
     marginBottom: ESPACIADO.sm,
@@ -276,8 +335,8 @@ const styles = StyleSheet.create({
     paddingRight: ESPACIADO.lg,
   },
   productRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     backgroundColor: COLORES.superficie,
     padding: ESPACIADO.md,
@@ -303,17 +362,17 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: RADIO.completo,
     backgroundColor: COLORES.primario,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     ...SOMBRAS.sm,
   },
   botonAgregarDeshabilitado: {
     opacity: 0.35,
   },
   cartRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     backgroundColor: COLORES.superficie,
     padding: ESPACIADO.md,
@@ -329,7 +388,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   qtyRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.xs,
   },
   botonCantidad: {
@@ -337,8 +396,8 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: RADIO.completo,
     backgroundColor: COLORES.primarioTinte,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   botonEliminar: {
     backgroundColor: COLORES.errorClaro,
@@ -350,9 +409,9 @@ const styles = StyleSheet.create({
     marginBottom: ESPACIADO.sm,
   },
   resumenTotal: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: COLORES.superficie,
     borderRadius: RADIO.lg,
     borderWidth: 1,

@@ -1,11 +1,26 @@
-import React from 'react';
-import { useAuth } from '../../context/ContextoAuth';
-import PanelOperativo from '../../components/PanelOperativo';
+import React from "react";
+import { useAuth } from "../../context/ContextoAuth";
+import PanelOperativo from "../../components/PanelOperativo";
 
 const ACCESOS = [
-  { titulo: 'Stock', pantalla: 'Stock', icono: 'cube', descripcion: 'Controlá existencias y registrá movimientos.' },
-  { titulo: 'Productos', pantalla: 'Productos', icono: 'library', descripcion: 'Consultá los productos del catálogo.' },
-  { titulo: 'Proveedores', pantalla: 'Proveedores', icono: 'car', descripcion: 'Organizá contactos y entregas.' },
+  {
+    titulo: "Stock",
+    pantalla: "Stock",
+    icono: "cube",
+    descripcion: "Controlá existencias y registrá movimientos.",
+  },
+  {
+    titulo: "Productos",
+    pantalla: "Productos",
+    icono: "library",
+    descripcion: "Consultá los productos del catálogo.",
+  },
+  {
+    titulo: "Proveedores",
+    pantalla: "Proveedores",
+    icono: "car",
+    descripcion: "Organizá contactos y entregas.",
+  },
 ];
 
 export default function PantallaDepositoInicio({ navigation }) {

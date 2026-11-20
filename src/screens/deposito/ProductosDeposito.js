@@ -1,20 +1,29 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl,
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
   useWindowDimensions,
-} from 'react-native';
-import { Alert } from '../../utils/alertas';
-import { formatearMoneda } from '../../utils/moneda';
-import { productsService } from '../../services/productos';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import Boton from '../../components/Boton';
+} from "react-native";
+import { Alert } from "../../utils/alertas";
+import { formatearMoneda } from "../../utils/moneda";
+import { productsService } from "../../services/productos";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import Boton from "../../components/Boton";
 
-export default function ProductosDepositoScreen({
-  navigation
-}) {
+export default function ProductosDepositoScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [cargando, setCargando] = useState(false);
   const { width } = useWindowDimensions();
@@ -26,7 +35,7 @@ export default function ProductosDepositoScreen({
     try {
       setProducts(await productsService.getAll());
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -35,29 +44,37 @@ export default function ProductosDepositoScreen({
     load();
   }, [load]);
   useEffect(() => {
-    const unsub = navigation.addListener('focus', load);
+    const unsub = navigation.addListener("focus", load);
     return unsub;
   }, [navigation, load]);
-  const remove = id => {
-    Alert.alert('Confirmar', 'El producto dejará de aparecer en el catálogo, pero conservará su historial.', [{
-      text: 'Cancelar',
-      style: 'cancel'
-    }, {
-      text: 'Desactivar',
-      style: 'destructive',
-      onPress: async () => {
-        try {
-          await productsService.remove(id);
-          load();
-        } catch (e) {
-          Alert.alert('Error', e.message);
-        }
-      }
-    }]);
+  const remove = (id) => {
+    Alert.alert(
+      "Confirmar",
+      "El producto dejará de aparecer en el catálogo, pero conservará su historial.",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Desactivar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await productsService.remove(id);
+              load();
+            } catch (e) {
+              Alert.alert("Error", e.message);
+            }
+          },
+        },
+      ],
+    );
   };
   const filas = Math.ceil(products.length / columnas);
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <View style={styles.encabezadoFila}>
           <EncabezadoPantalla
@@ -69,7 +86,7 @@ export default function ProductosDepositoScreen({
           <Boton
             titulo="Nuevo producto"
             icono="add"
-            alPresionar={() => navigation.navigate('ProductoForm', {})}
+            alPresionar={() => navigation.navigate("ProductoForm", {})}
             estilo={styles.accionPrincipal}
           />
         </View>
@@ -78,7 +95,11 @@ export default function ProductosDepositoScreen({
           contentContainerStyle={styles.contenidoLista}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
+            <RefreshControl
+              refreshing={cargando}
+              onRefresh={load}
+              tintColor={COLORES.primario}
+            />
           }
         >
           {products.length > 0 ? (
@@ -87,30 +108,56 @@ export default function ProductosDepositoScreen({
                 {products
                   .slice(indiceFila * columnas, (indiceFila + 1) * columnas)
                   .map((item) => (
-                    <View key={item.id} style={[styles.celda, { width: `${100 / columnas}%` }]}>
+                    <View
+                      key={item.id}
+                      style={[styles.celda, { width: `${100 / columnas}%` }]}
+                    >
                       <View style={styles.card}>
                         <View style={styles.cardCabecera}>
-                          <Text style={styles.cardTitle} numberOfLines={2}>{item.titulo}</Text>
+                          <Text style={styles.cardTitle} numberOfLines={2}>
+                            {item.titulo}
+                          </Text>
                           <Etiqueta
-                            texto={item.activo ? 'Activo' : 'Inactivo'}
-                            variante={item.activo ? 'exito' : 'neutro'}
+                            texto={item.activo ? "Activo" : "Inactivo"}
+                            variante={item.activo ? "exito" : "neutro"}
                           />
                         </View>
-                        <Text style={styles.cardPrecio}>{formatearMoneda(item.precio)}</Text>
+                        <Text style={styles.cardPrecio}>
+                          {formatearMoneda(item.precio)}
+                        </Text>
                         <View style={styles.datosFila}>
-                          <Text style={styles.cardText}>Stock: {item.stock}</Text>
-                          <Text style={styles.cardText}>{item.genero || 'Sin género'}</Text>
+                          <Text style={styles.cardText}>
+                            Stock: {item.stock}
+                          </Text>
+                          <Text style={styles.cardText}>
+                            {item.genero || "Sin género"}
+                          </Text>
                         </View>
                         <View style={styles.acciones}>
                           <TouchableOpacity
-                            onPress={() => navigation.navigate('ProductoForm', { product: item })}
+                            onPress={() =>
+                              navigation.navigate("ProductoForm", {
+                                product: item,
+                              })
+                            }
                             style={styles.accionEditar}
                           >
-                            <Icono nombre="create-outline" tamaño={15} color={COLORES.primario} />
+                            <Icono
+                              nombre="create-outline"
+                              tamaño={15}
+                              color={COLORES.primario}
+                            />
                             <Text style={styles.link}>Editar</Text>
                           </TouchableOpacity>
-                          <TouchableOpacity onPress={() => remove(item.id)} style={styles.accionPeligro}>
-                            <Icono nombre="trash-outline" tamaño={15} color={COLORES.error} />
+                          <TouchableOpacity
+                            onPress={() => remove(item.id)}
+                            style={styles.accionPeligro}
+                          >
+                            <Icono
+                              nombre="trash-outline"
+                              tamaño={15}
+                              color={COLORES.error}
+                            />
                             <Text style={styles.linkPeligro}>Desactivar</Text>
                           </TouchableOpacity>
                         </View>
@@ -122,16 +169,23 @@ export default function ProductosDepositoScreen({
           ) : (
             <View style={styles.vacio}>
               <View style={styles.vacioIcono}>
-                <Icono nombre={cargando ? 'library' : 'search'} tamaño={34} color={COLORES.primarioClaro} />
+                <Icono
+                  nombre={cargando ? "library" : "search"}
+                  tamaño={34}
+                  color={COLORES.primarioClaro}
+                />
               </View>
               <Text style={styles.vacioTexto}>
-                {cargando ? 'Cargando productos…' : 'No hay productos cargados.'}
+                {cargando
+                  ? "Cargando productos…"
+                  : "No hay productos cargados."}
               </Text>
             </View>
           )}
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -141,16 +195,16 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezadoFila: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
     gap: ESPACIADO.md,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   encabezado: {
     marginBottom: ESPACIADO.md,
@@ -166,7 +220,7 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xl,
   },
   fila: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
   },
   celda: {
@@ -181,9 +235,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.xs,
   },
@@ -206,14 +260,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   datosFila: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginTop: ESPACIADO.xs,
   },
   acciones: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
     marginTop: ESPACIADO.sm,
     paddingTop: ESPACIADO.sm,
@@ -221,13 +275,13 @@ const styles = StyleSheet.create({
     borderTopColor: COLORES.bordeSuave,
   },
   accionEditar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   accionPeligro: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   link: {
@@ -241,7 +295,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   vacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   vacioIcono: {
@@ -251,8 +305,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -260,6 +314,6 @@ const styles = StyleSheet.create({
     color: COLORES.textoSecundario,
     fontFamily: FUENTES.medio,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

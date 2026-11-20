@@ -1,21 +1,31 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl,
-  TextInput, useWindowDimensions,
-} from 'react-native';
-import { clientsService } from '../../services/clientes';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
-import { Alert } from '../../utils/alertas';
-import Icono from '../../components/Icono';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import Boton from '../../components/Boton';
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  TextInput,
+  useWindowDimensions,
+} from "react-native";
+import { clientsService } from "../../services/clientes";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
+import { Alert } from "../../utils/alertas";
+import Icono from "../../components/Icono";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import Boton from "../../components/Boton";
 
-export default function ClientesScreen({
-  navigation
-}) {
+export default function ClientesScreen({ navigation }) {
   const [clients, setClients] = useState([]);
   const [cargando, setCargando] = useState(false);
-  const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState("");
   const { width } = useWindowDimensions();
   const columnas = width < 768 ? 1 : width < 1024 ? 2 : 3;
   const anchoContenido = Math.min(width - ESPACIADO.lg * 2, 1360);
@@ -25,7 +35,7 @@ export default function ClientesScreen({
     try {
       setClients(await clientsService.getAll());
     } catch (e) {
-      Alert.alert('Error', e.message);
+      Alert.alert("Error", e.message);
     } finally {
       setCargando(false);
     }
@@ -34,38 +44,42 @@ export default function ClientesScreen({
     load();
   }, [load]);
   useEffect(() => {
-    const unsub = navigation.addListener('focus', load);
+    const unsub = navigation.addListener("focus", load);
     return unsub;
   }, [navigation, load]);
-  const remove = async id => {
-    Alert.alert('Confirmar', '¿Eliminar cliente?', [{
-      text: 'Cancelar',
-      style: 'cancel'
-    }, {
-      text: 'Eliminar',
-      style: 'destructive',
-      onPress: async () => {
-        try {
-          await clientsService.remove(id);
-          load();
-        } catch (e) {
-          Alert.alert('Error', e.message);
-        }
-      }
-    }]);
+  const remove = async (id) => {
+    Alert.alert("Confirmar", "¿Eliminar cliente?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await clientsService.remove(id);
+            load();
+          } catch (e) {
+            Alert.alert("Error", e.message);
+          }
+        },
+      },
+    ]);
   };
 
   const filtrados = clients.filter((cliente) => {
     const texto = busqueda.trim().toLowerCase();
     if (!texto) return true;
     return (
-      (cliente.nombre || '').toLowerCase().includes(texto) ||
-      (cliente.email || '').toLowerCase().includes(texto)
+      (cliente.nombre || "").toLowerCase().includes(texto) ||
+      (cliente.email || "").toLowerCase().includes(texto)
     );
   });
   const filas = Math.ceil(filtrados.length / columnas);
 
-  return <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <View style={[styles.contenido, { maxWidth: anchoContenido }]}>
         <View style={styles.encabezadoFila}>
           <EncabezadoPantalla
@@ -77,7 +91,7 @@ export default function ClientesScreen({
           <Boton
             titulo="Nuevo cliente"
             icono="add"
-            alPresionar={() => navigation.navigate('ClienteForm', {})}
+            alPresionar={() => navigation.navigate("ClienteForm", {})}
             estilo={styles.accionPrincipal}
           />
         </View>
@@ -92,8 +106,12 @@ export default function ClientesScreen({
             onChangeText={setBusqueda}
           />
           {busqueda ? (
-            <TouchableOpacity onPress={() => setBusqueda('')}>
-              <Icono nombre="close" tamaño={16} color={COLORES.textoSecundario} />
+            <TouchableOpacity onPress={() => setBusqueda("")}>
+              <Icono
+                nombre="close"
+                tamaño={16}
+                color={COLORES.textoSecundario}
+              />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -104,7 +122,11 @@ export default function ClientesScreen({
           showsVerticalScrollIndicator
           keyboardShouldPersistTaps="handled"
           refreshControl={
-            <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
+            <RefreshControl
+              refreshing={cargando}
+              onRefresh={load}
+              tintColor={COLORES.primario}
+            />
           }
         >
           {filtrados.length > 0 ? (
@@ -113,29 +135,51 @@ export default function ClientesScreen({
                 {filtrados
                   .slice(indiceFila * columnas, (indiceFila + 1) * columnas)
                   .map((item) => (
-                    <View key={item.id} style={[styles.celda, { width: `${100 / columnas}%` }]}>
+                    <View
+                      key={item.id}
+                      style={[styles.celda, { width: `${100 / columnas}%` }]}
+                    >
                       <View style={styles.card}>
                         <View style={styles.cardCabecera}>
                           <View style={styles.avatar}>
                             <Text style={styles.avatarTexto}>
-                              {(item.nombre || '?').charAt(0).toUpperCase()}
+                              {(item.nombre || "?").charAt(0).toUpperCase()}
                             </Text>
                           </View>
                           <View style={{ flex: 1, minWidth: 0 }}>
-                            <Text style={styles.cardTitle} numberOfLines={1}>{item.nombre}</Text>
-                            <Text style={styles.cardText} numberOfLines={1}>{item.email || 'Sin correo'}</Text>
+                            <Text style={styles.cardTitle} numberOfLines={1}>
+                              {item.nombre}
+                            </Text>
+                            <Text style={styles.cardText} numberOfLines={1}>
+                              {item.email || "Sin correo"}
+                            </Text>
                           </View>
                         </View>
                         <View style={styles.acciones}>
                           <TouchableOpacity
-                            onPress={() => navigation.navigate('ClienteForm', { client: item })}
+                            onPress={() =>
+                              navigation.navigate("ClienteForm", {
+                                client: item,
+                              })
+                            }
                             style={styles.accionEditar}
                           >
-                            <Icono nombre="create-outline" tamaño={15} color={COLORES.primario} />
+                            <Icono
+                              nombre="create-outline"
+                              tamaño={15}
+                              color={COLORES.primario}
+                            />
                             <Text style={styles.link}>Editar</Text>
                           </TouchableOpacity>
-                          <TouchableOpacity onPress={() => remove(item.id)} style={styles.accionPeligro}>
-                            <Icono nombre="trash-outline" tamaño={15} color={COLORES.error} />
+                          <TouchableOpacity
+                            onPress={() => remove(item.id)}
+                            style={styles.accionPeligro}
+                          >
+                            <Icono
+                              nombre="trash-outline"
+                              tamaño={15}
+                              color={COLORES.error}
+                            />
                             <Text style={styles.linkPeligro}>Eliminar</Text>
                           </TouchableOpacity>
                         </View>
@@ -148,23 +192,24 @@ export default function ClientesScreen({
             <View style={styles.vacio}>
               <View style={styles.vacioIcono}>
                 <Icono
-                  nombre={cargando ? 'people' : busqueda ? 'search' : 'people'}
+                  nombre={cargando ? "people" : busqueda ? "search" : "people"}
                   tamaño={34}
                   color={COLORES.primarioClaro}
                 />
               </View>
               <Text style={styles.vacioTexto}>
                 {cargando
-                  ? 'Cargando clientes…'
+                  ? "Cargando clientes…"
                   : busqueda
-                    ? 'Ningún cliente coincide con la búsqueda.'
-                    : 'Todavía no hay clientes cargados.'}
+                    ? "Ningún cliente coincide con la búsqueda."
+                    : "Todavía no hay clientes cargados."}
               </Text>
             </View>
           )}
         </ScrollView>
       </View>
-    </View>;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -174,16 +219,16 @@ const styles = StyleSheet.create({
   },
   contenido: {
     flex: 1,
-    width: '100%',
-    alignSelf: 'center',
+    width: "100%",
+    alignSelf: "center",
     padding: ESPACIADO.lg,
   },
   encabezadoFila: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
     gap: ESPACIADO.md,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   encabezado: {
     marginBottom: ESPACIADO.md,
@@ -192,8 +237,8 @@ const styles = StyleSheet.create({
     marginBottom: ESPACIADO.md,
   },
   buscador: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     backgroundColor: COLORES.superficie,
     borderRadius: RADIO.completo,
@@ -219,7 +264,7 @@ const styles = StyleSheet.create({
     paddingBottom: ESPACIADO.xl,
   },
   fila: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
   },
   celda: {
@@ -234,8 +279,8 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   cardCabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: ESPACIADO.sm,
     marginBottom: ESPACIADO.sm,
   },
@@ -244,8 +289,8 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: RADIO.completo,
     backgroundColor: COLORES.primarioTinte,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   avatarTexto: {
     color: COLORES.primario,
@@ -263,20 +308,20 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   acciones: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: ESPACIADO.md,
     paddingTop: ESPACIADO.sm,
     borderTopWidth: 1,
     borderTopColor: COLORES.bordeSuave,
   },
   accionEditar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   accionPeligro: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   link: {
@@ -290,7 +335,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   vacio: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: ESPACIADO.xxl,
   },
   vacioIcono: {
@@ -300,8 +345,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORES.superficie,
     borderWidth: 1,
     borderColor: COLORES.bordeSuave,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
     ...SOMBRAS.sm,
   },
@@ -309,6 +354,6 @@ const styles = StyleSheet.create({
     color: COLORES.textoSecundario,
     fontFamily: FUENTES.medio,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

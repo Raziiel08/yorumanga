@@ -1,47 +1,53 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
-import Icono from '../../components/Icono';
-import Etiqueta from '../../components/Etiqueta';
-import EncabezadoPantalla from '../../components/EncabezadoPantalla';
-import { supabase } from '../../config/supabase';
-import { useAuth } from '../../context/ContextoAuth';
-import { COLORES, ESPACIADO, FUENTES, RADIO, SOMBRAS } from '../../constants/theme';
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
+import Icono from "../../components/Icono";
+import Etiqueta from "../../components/Etiqueta";
+import EncabezadoPantalla from "../../components/EncabezadoPantalla";
+import { supabase } from "../../config/supabase";
+import { useAuth } from "../../context/ContextoAuth";
+import {
+  COLORES,
+  ESPACIADO,
+  FUENTES,
+  RADIO,
+  SOMBRAS,
+} from "../../constants/theme";
 
 const ESTILOS_ESTADO = {
-  pendiente: 'advertencia',
-  'en revision': 'info',
-  'en revisión': 'info',
-  aprobado: 'exito',
-  aceptada: 'exito',
-  rechazada: 'error',
-  rechazado: 'error',
-  disponible: 'exito',
+  pendiente: "advertencia",
+  "en revision": "info",
+  "en revisión": "info",
+  aprobado: "exito",
+  aceptada: "exito",
+  rechazada: "error",
+  rechazado: "error",
+  disponible: "exito",
 };
 
 export default function MisSolicitudesScreen() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const load = useCallback(async () => {
     if (!user) {
       setItems([]);
-      setError('Iniciá sesión para ver tus solicitudes');
+      setError("Iniciá sesión para ver tus solicitudes");
       return;
     }
     setCargando(true);
     try {
       const { data, error: errorConsulta } = await supabase
-        .from('solicitudes_manga')
-        .select('*')
-        .eq('usuario_id', user.id)
-        .order('creado_en', { ascending: false });
+        .from("solicitudes_manga")
+        .select("*")
+        .eq("usuario_id", user.id)
+        .order("creado_en", { ascending: false });
       if (errorConsulta) throw errorConsulta;
       setItems(data || []);
-      setError('');
+      setError("");
     } catch (e) {
-      console.error('Error cargando solicitudes:', e);
-      setError('No se pudieron cargar las solicitudes.');
+      console.error("Error cargando solicitudes:", e);
+      setError("No se pudieron cargar las solicitudes.");
     } finally {
       setCargando(false);
     }
@@ -61,41 +67,62 @@ export default function MisSolicitudesScreen() {
       <FlatList
         data={items}
         keyExtractor={(i) => i.id}
-        refreshControl={(
-          <RefreshControl refreshing={cargando} onRefresh={load} tintColor={COLORES.primario} />
-        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={cargando}
+            onRefresh={load}
+            tintColor={COLORES.primario}
+          />
+        }
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.filaEncabezado}>
               <Text style={styles.cardTitle}>{item.titulo_solicitado}</Text>
               <Etiqueta
                 texto={item.estado}
-                variante={ESTILOS_ESTADO[(item.estado || '').toLowerCase()] || 'neutro'}
+                variante={
+                  ESTILOS_ESTADO[(item.estado || "").toLowerCase()] || "neutro"
+                }
               />
             </View>
             <Text style={styles.fecha}>
-              Solicitado el {new Date(item.creado_en).toLocaleDateString('es-AR', {
-                day: 'numeric', month: 'long', year: 'numeric',
+              Solicitado el{" "}
+              {new Date(item.creado_en).toLocaleDateString("es-AR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
               })}
             </Text>
             {item.observaciones ? (
               <View style={styles.observaciones}>
-                <Icono nombre="chatbubble-ellipses-outline" tamaño={14} color={COLORES.textoSecundario} />
-                <Text style={styles.observacionesTexto}>{item.observaciones}</Text>
+                <Icono
+                  nombre="chatbubble-ellipses-outline"
+                  tamaño={14}
+                  color={COLORES.textoSecundario}
+                />
+                <Text style={styles.observacionesTexto}>
+                  {item.observaciones}
+                </Text>
               </View>
             ) : null}
           </View>
         )}
-        ListEmptyComponent={(
+        ListEmptyComponent={
           <View style={styles.contenedorVacio}>
             <View style={styles.iconoVacioContenedor}>
-              <Icono nombre="document-text-outline" tamaño={32} color={COLORES.primarioLight} />
+              <Icono
+                nombre="document-text-outline"
+                tamaño={32}
+                color={COLORES.primarioLight}
+              />
             </View>
             <Text style={styles.empty}>
-              {cargando ? 'Cargando solicitudes…' : 'Todavía no enviaste ninguna solicitud.'}
+              {cargando
+                ? "Cargando solicitudes…"
+                : "Todavía no enviaste ninguna solicitud."}
             </Text>
           </View>
-        )}
+        }
       />
     </View>
   );
@@ -104,9 +131,9 @@ export default function MisSolicitudesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: 1080,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: COLORES.fondo,
     padding: ESPACIADO.lg,
   },
@@ -125,9 +152,9 @@ const styles = StyleSheet.create({
     ...SOMBRAS.sm,
   },
   filaEncabezado: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: ESPACIADO.sm,
   },
   cardTitle: {
@@ -144,8 +171,8 @@ const styles = StyleSheet.create({
     marginTop: ESPACIADO.xs,
   },
   observaciones: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: 6,
     marginTop: ESPACIADO.sm,
     backgroundColor: COLORES.fondo,
@@ -160,7 +187,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   contenedorVacio: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: ESPACIADO.xl,
   },
   iconoVacioContenedor: {
@@ -168,13 +195,13 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: RADIO.full,
     backgroundColor: COLORES.primarioTinte,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: ESPACIADO.md,
   },
   empty: {
     color: COLORES.textoSecundario,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: ESPACIADO.xs,
     fontFamily: FUENTES.bold,
   },

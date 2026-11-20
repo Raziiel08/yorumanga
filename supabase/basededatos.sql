@@ -570,12 +570,44 @@ GRANT EXECUTE ON FUNCTION public.crear_venta(UUID, JSONB) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.anular_venta(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.actualizar_estado_pedido(UUID, TEXT) TO authenticated;
 
+CREATE OR REPLACE FUNCTION public.asignar_mi_rol(p_rol TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
+AS $$
+BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'No autenticado' USING ERRCODE = '42501';
+  END IF;
+  IF p_rol IS NULL OR p_rol NOT IN ('cliente', 'admin', 'vendedor', 'deposito') THEN
+    RAISE EXCEPTION 'Rol no válido';
+  END IF;
+  UPDATE public.usuarios SET rol = p_rol, actualizado_en = NOW() WHERE id = auth.uid();
+  RETURN p_rol;
+END;
+$$;
+GRANT EXECUTE ON FUNCTION public.asignar_mi_rol(TEXT) TO authenticated, anon;
+
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_rol TEXT;
 BEGIN
+  v_rol := COALESCE(NEW.raw_user_meta_data->>'rol', 'cliente');
+  IF v_rol NOT IN ('cliente', 'vendedor', 'deposito', 'admin') THEN
+    v_rol := 'cliente';
+  END IF;
+
   INSERT INTO public.usuarios (id, email, nombre, rol)
-  VALUES (NEW.id, NEW.email, COALESCE(NEW.raw_user_meta_data->>'nombre', ''), 'cliente')
-  ON CONFLICT (id) DO NOTHING;
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'nombre', ''),
+    v_rol
+  )
+  ON CONFLICT (id) DO UPDATE
+    SET rol = EXCLUDED.rol,
+        nombre = EXCLUDED.nombre,
+        actualizado_en = NOW();
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';

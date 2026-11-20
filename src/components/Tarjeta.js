@@ -1,11 +1,21 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { COLORES, ESPACIADO, RADIO, SOMBRAS } from '../constants/theme';
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { COLORES, ESPACIADO, RADIO, SOMBRAS } from "../constants/theme";
 
-export default function Tarjeta({ hijos, children, estilo, elevada = false, ...props }) {
+export default function Tarjeta({
+  hijos,
+  children,
+  estilo,
+  elevada = false,
+  ...props
+}) {
   return (
     <View
-      style={[estilos.tarjeta, elevada ? estilos.elevada : estilos.plana, estilo]}
+      style={[
+        estilos.tarjeta,
+        elevada ? estilos.elevada : estilos.plana,
+        estilo,
+      ]}
       {...props}
     >
       {children ?? hijos}
