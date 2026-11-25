@@ -83,9 +83,10 @@ export const aiService = {
         .filter((recommendation) => typeof recommendation === "string")
         .slice(0, 5)
         .map((recommendation) => recommendation.slice(0, 300)),
-      total_ventas: data.totalVentas,
-      total_pedidos: data.totalPedidos,
-      productos_mas_vendidos: data.productosMasVendidos,
+      total_ventas: report.totalVentas ?? data.totalVentas,
+      total_pedidos: report.totalPedidos ?? data.totalPedidos,
+      productos_mas_vendidos:
+        report.productosMasVendidos ?? data.productosMasVendidos,
     };
   },
 

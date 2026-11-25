@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "node --test"
+    "test": "node --test",
+    "test:ai": "npx -y deno@2 test --allow-env supabase/funciones/ai/pruebas.js"
   },
   "dependencies": {
     "@expo-google-fonts/bebas-neue": "^0.4.1",

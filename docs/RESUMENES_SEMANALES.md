@@ -23,7 +23,7 @@
 - **Tareas pendientes:** Comenzar el modelado del Diagrama Entidad-Relación y diseño de pantallas en Figma.
 - **Funcionalidades nuevas:** Definición del alcance inicial (qué sí hace y qué no hace el software).
 - **Problemas encontrados:** Dudas sobre si implementar pagos con tarjeta bancaria en vivo en la primera versión.
-- **Solución aplicada:** Se decidió dejar la pasarela de pagos fuera del alcance inicial (registrando pedidos con pago en efectivo/transferencia/mostrador) para priorizar el control estricto de stock y la lógica transaccional.
+- **Solución aplicada:** Se decidió dejar la pasarela bancaria real fuera del alcance inicial y conservar solo un checkout de demostración (1/3/6 cuotas sin interés) que crea el pedido y descuenta stock. El cobro efectivo se registra como efectivo, transferencia o mostrador, para priorizar el control estricto del inventario y la lógica transaccional.
 
 ---
 
@@ -94,9 +94,9 @@
 
 - **Objetivo de la etapa:** Pruebas rigurosas (positivas, negativas y límite), documentación final, manual de usuario y preparación de la defensa.
 - **Tareas realizadas:**
-  - Ejecución de la matriz de pruebas (CP01 a CP15) cubriendo casos válidos, inválidos y límites de stock y contraseñas.
+  - Ejecución de la matriz de pruebas (CP01 a CP25 de la app y CP26 a CP31 de IA) cubriendo casos válidos, inválidos y límites de stock, contraseñas y checkout. La matriz completa se mantiene en `docs/PRUEBAS.md`.
   - Compilación final del bundle web de producción (`npx expo export --platform web`), verificando cero errores de empaquetado.
-  - Redacción del documento integral para Word (`docs/DOCUMENTO_FINAL_WORD.md`) con las 10 secciones exigidas (incluyendo marketing, maquetado y QR).
+  - Redacción del documento integral para Word (`docs/DOCUMENTO_FINAL_WORD.md`) con las 10 secciones exigidas (incluyendo marketing, maquetado y QR), la presentación de defensa (`docs/PRESENTACION_DEFENSA.md`) y el checklist de entrega (`docs/CHECKLIST_ENTREGA.md`).
   - Generación de los códigos QR del local comercial (`docs/assets/qrs/`).
   - Creación del Registro de Uso de IA (`docs/REGISTRO_IA.md`) y Manual de Usuario.
   - Sincronización del repositorio de GitHub (`main`, `Documentacion`, `Marketing`).

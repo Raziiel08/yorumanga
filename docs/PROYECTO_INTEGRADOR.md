@@ -44,7 +44,7 @@ Desarrollo de un sistema multiplataforma (móvil y web) en **React Native con Ex
 
 ### Alcance (Qué NO realiza en esta etapa inicial):
 - Facturación fiscal electrónica directa con la AFIP.
-- Pasarela bancaria de captura de tarjetas en vivo (se simula el cobro contra entrega / transferencia / punto de venta).
+- Pasarela bancaria de captura de tarjetas en vivo: el checkout es una demostración de experiencia de usuario (1, 3 o 6 cuotas sin interés) que crea el pedido en Supabase, pero no debita dinero ni contacta a un banco. El cobro real se registra como efectivo, transferencia o venta en mostrador.
 
 ---
 
@@ -52,7 +52,7 @@ Desarrollo de un sistema multiplataforma (móvil y web) en **React Native con Ex
 
 ### Requisitos Funcionales:
 * **RF01:** El sistema deberá permitir iniciar sesión con correo y contraseña.
-* **RF02:** El sistema deberá permitir registrar nuevos usuarios con selector visual de rol (`cliente`, `vendedor`, `deposito`, `admin`).
+* **RF02:** El sistema deberá permitir registrar nuevos usuarios. El registro público crea perfiles de `cliente`; los roles operativos (`vendedor`, `deposito`, `admin`) son asignados por la administración. **Pendiente:** retirar el selector público de roles y restringir la RPC `asignar_mi_rol` (deuda de seguridad del informe de testing).
 * **RF03:** El sistema deberá permitir al Administrador gestionar productos (CRUD completo).
 * **RF04:** El sistema deberá mostrar el catálogo de títulos activos con filtros por género y Novedades.
 * **RF05:** El sistema deberá permitir agregar tomos al carrito respetando el stock disponible.
@@ -91,3 +91,4 @@ Desarrollo de un sistema multiplataforma (móvil y web) en **React Native con Ex
 3. **Borrado lógico:** Un producto que registre operaciones históricas no puede borrarse físicamente de la base de datos (se desactiva con `activo = false`).
 4. **Validación de correos:** Solo se aceptan correos terminados en `.com` o `.com.ar` de dominios reconocidos.
 5. **Completitud de datos:** Los proveedores y clientes deben registrar obligatoriamente nombre, contacto, correo y dirección.
+6. **Pago simulado:** El checkout de la app es una demostración visual: valida formatos, ofrece 1, 3 o 6 cuotas sin interés y emite un comprobante interno. No procesa pagos, no dispone de SSL propio ni realiza verificaciones criptográficas.

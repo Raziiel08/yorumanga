@@ -40,7 +40,6 @@ export const FONTS = {
   regular: "System",
   medium: "System",
   bold: "System",
-  // Familias de marca (requieren useFonts en App.js)
   display: "BebasNeue_400Regular",
   cuerpo: "Manrope_400Regular",
   medio: "Manrope_500Medium",
@@ -101,16 +100,17 @@ export const SHADOWS = {
   },
 };
 
-// Aliases en español (compatibilidad)
 export const COLORES = {
   primario: COLORS.primary,
   primarioOscuro: COLORS.primaryDark,
   primarioClaro: COLORS.primaryLight,
+  primarioLight: COLORS.primaryLight,
   secundario: COLORS.secondary,
   acento: COLORS.accent,
   acentoOscuro: COLORS.accentDark,
   acentoTinte: COLORS.accentTint,
   primarioTinte: COLORS.primaryTint,
+  primarioTint: COLORS.primaryTint,
   fondo: COLORS.background,
   superficie: COLORS.surface,
   superficieAlterna: COLORS.surfaceAlt,
@@ -118,8 +118,10 @@ export const COLORES = {
   texto: COLORS.text,
   textoSecundario: COLORS.textSecondary,
   textoAtenuado: COLORS.textMuted,
+  textoSilenciado: COLORS.textMuted,
   borde: COLORS.border,
   bordeSuave: COLORS.borderLight,
+  bordeClaro: COLORS.borderLight,
   exito: COLORS.success,
   exitoClaro: COLORS.successLight,
   advertencia: COLORS.warning,

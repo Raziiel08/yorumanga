@@ -3,11 +3,6 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import Icono from "./Icono";
 import { COLORES, ESPACIADO, FUENTES, RADIO } from "../constants/theme";
 
-/**
- * Botón de acción destructiva con confirmación inline:
- * primer toque → cambia a "¿Confirmar?" en rojo durante unos segundos;
- * segundo toque → ejecuta la acción. Sin popups.
- */
 export default function ConfirmarBoton({
   texto = "Eliminar",
   textoConfirmar = "¿Confirmar?",

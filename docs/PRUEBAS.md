@@ -4,6 +4,8 @@
 **Materia:** Aplicaciones Móviles | **Profesor:** Pablo Gareis | **Curso:** 7° 3°  
 **Alumnos:** Agustín Hermida y Elías González  
 
+> **Fuente única de verdad:** la matriz completa (CP01–CP31) se mantiene en este archivo. Los demás documentos solo la referencian y no reproducen tablas parciales ni cambian la numeración de los casos.
+
 ---
 
 ## Matriz de Casos de Prueba (Positivas, Negativas y Límite)
@@ -34,4 +36,19 @@
 | **CP22** | Pasarela de Pago | Negativo | Ingresar fecha de expiración vencida o mes 15/28 | Bloquea el pago indicando fecha inválida o caducada | **Aprobado** |
 | **CP23** | Pasarela de Pago | Positivo | Presionar botón demo "Visa Crédito (3 cuotas)" | Autocompleta datos válidos de prueba para evaluación | **Aprobado** |
 | **CP24** | Pasarela de Pago | Positivo | Detección de marca de tarjeta | Ingresar número comenzando en 4 (Visa) o 5 (Mastercard) y actualiza el logo en vivo | **Aprobado** |
-| **CP25** | Pasarela de Pago | Positivo | Confirmar pago de pedido con tarjeta | Simula procesamiento bancario, descuenta stock y emite ticket digital `#YORU-XXXXXX` | **Aprobado** |
+| **CP25** | Checkout de demostración | Positivo | Confirmar pedido con tarjeta de prueba | Simula el procesamiento sin conexión bancaria, descuenta stock y emite ticket interno `#YORU-XXXXXX` | **Aprobado** |
+
+### Pruebas automatizadas de la Edge Function `ai` (CP26–CP31)
+
+Ejecución: `npm run test:ai` → **6 passed / 0 failed**. Se ejecutan con Gemini, Supabase y el token de sesión simulados. La lógica real está en `supabase/funciones/ai/logica.js` y el punto de entrada en `index.js`.
+
+| ID | Módulo / Función | Tipo | Entrada / Acción Realizada | Resultado Esperado | Resultado Obtenido |
+|:---:|:---|:---:|:---|:---|:---:|
+| **CP26** | IA / CORS | Positivo | Solicitud `OPTIONS` a `/functions/v1/ai` | Responde `204` con `Access-Control-Allow-Origin: *` | **Aprobado** |
+| **CP27** | IA / Seguridad | Negativo | Solicitud `POST` sin encabezado `Authorization` | Responde `401` y no llama a Gemini | **Aprobado** |
+| **CP28** | IA / Validación | Negativo | `POST` con `type: "otro"` | Responde `400` por tipo desconocido | **Aprobado** |
+| **CP29** | IA / Recomendador | Positivo | `type: "recommend"` con preferencias "ninjas"; Gemini inventa un ID y un stock | Descarta el ID inventado y reescribe título, precio y stock desde la BD | **Aprobado** |
+| **CP30** | IA / Informes | Positivo | `type: "report"` con ventas y pedidos simulados | El servidor calcula los totales (ventas 3000, pedidos 1, más vendido 3 u.) y Gemini solo redacta el resumen | **Aprobado** |
+| **CP31** | IA / Chat | Positivo | `type: "chat"` con `message: "¿qué vendés?"` | Devuelve texto plano en `content`, sin JSON forzado | **Aprobado** |
+
+**Estado de verificación:** CP01–CP25 son casos de ejecución manual documentados y no están automatizados. CP26–CP31 se ejecutan de forma local y determinista. La función desplegada en Supabase necesita un JWT de usuario válido: con la anon key responde `401 {"error":"Sesión inválida"}`, por lo que la verificación en vivo queda pendiente de credenciales.

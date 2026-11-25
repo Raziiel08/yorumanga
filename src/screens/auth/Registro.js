@@ -180,7 +180,6 @@ export default function PantallaRegistro({ navigation }) {
             keyboardType: "email-address",
           })}
 
-          {/* ── SELECTOR DE ROL ── */}
           <View style={estilos.grupoCampo}>
             <Text style={estilos.etiquetaCampo}>Tipo de cuenta</Text>
             <View style={estilos.filaRoles}>
@@ -387,7 +386,6 @@ const estilos = StyleSheet.create({
     borderColor: COLORES.primario,
     backgroundColor: COLORES.superficie,
   },
-  // ── Selector de roles ──
   filaRoles: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -426,7 +424,6 @@ const estilos = StyleSheet.create({
   descripcionRolActiva: {
     color: COLORES.primarioClaro,
   },
-  // ─────────────────────
   boton: {
     backgroundColor: COLORES.primario,
     paddingVertical: ESPACIADO.md,

@@ -2,10 +2,6 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { COLORES, ESPACIADO, FUENTES } from "../constants/theme";
 
-/**
- * Encabezado de pantalla estandarizado: kicker en mayúsculas,
- * título display grande y descripción opcional.
- */
 export default function EncabezadoPantalla({
   kicker,
   titulo,

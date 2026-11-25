@@ -9,9 +9,6 @@ import {
   SOMBRAS,
 } from "../constants/theme";
 
-/**
- * Chip pill reutilizable para filtros y categorías.
- */
 export default function Chip({
   texto,
   icono,

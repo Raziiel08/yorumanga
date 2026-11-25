@@ -156,14 +156,12 @@ export default function PantallaCatalogo({ navigation, route }) {
         }
       >
         <View style={[styles.contenido, { maxWidth: anchoMaxContenido }]}>
-          {/* Encabezado descriptivo de la tienda */}
           <EncabezadoPantalla
             kicker="TIENDA YORUMANGA"
             titulo={tituloPantalla}
             descripcion={descripcionPantalla}
           />
 
-          {/* Barra de búsqueda interactiva */}
           <View
             style={[
               styles.contenedorBuscador,
@@ -201,7 +199,6 @@ export default function PantallaCatalogo({ navigation, route }) {
             )}
           </View>
 
-          {/* Fila de Filtros por Género y Novedades */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -263,7 +260,6 @@ export default function PantallaCatalogo({ navigation, route }) {
             />
           </ScrollView>
 
-          {/* Resumen numérico y botón de limpiar */}
           <View style={styles.resumenResultados}>
             <Text style={styles.contadorResultados}>
               {cargando
@@ -281,7 +277,6 @@ export default function PantallaCatalogo({ navigation, route }) {
             )}
           </View>
 
-          {/* Grilla de mangas */}
           {filtrados.length > 0 ? (
             <View key={columnasCatalogo} style={styles.grilla}>
               {Array.from(

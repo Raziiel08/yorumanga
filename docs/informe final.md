@@ -37,9 +37,9 @@ El propósito fundamental del sistema es:
 
 ### 1.3 Alcance
 * **Dentro del alcance (Qué sí realiza el sistema):**
-  - Autenticación segura de usuarios mediante correo y contraseña con selección interactiva de roles (Cliente, Vendedor, Depósito o Administrador).
+  - Autenticación de usuarios mediante correo y contraseña con perfiles (Cliente, Vendedor, Depósito o Administrador). El registro público crea cuentas de cliente; los demás roles se gestionan internamente (pendiente de restricción, ver informe de testing).
   - Catálogo virtual interactivo clasificado por géneros (Shounen, Seinen, Shoujo, Spokon, Isekai, etc.), Novedades, Ofertas y navegación con ocultamiento dinámico de filtros al scrollear hacia abajo.
-  - Carrito de compras y pasarela interactiva de simulación de pago con tarjeta de crédito/débito en 3D (con detección de marca Visa, Mastercard, Amex, Cabal, Naranja, cuotas y emisión de comprobante digital).
+  - Carrito de compras y checkout interactivo de demostración con tarjeta 3D (detección de marca Visa, Mastercard, Amex, Cabal y Naranja; 1, 3 o 6 cuotas sin interés y comprobante digital interno). No hay pasarela bancaria real.
   - Módulo de Punto de Venta (POS) en mostrador para vendedores con cálculo automático de totales y descuento en tiempo real.
   - Administración de inventario en bodega: altas/bajas de tomos, entradas por recepción de proveedores y auditoría de movimientos.
   - Módulo de solicitudes especiales para títulos de manga que no se encuentren en el catálogo.
@@ -47,7 +47,7 @@ El propósito fundamental del sistema es:
   - Generador de reportes estadísticos e informes comerciales estratégicos para la gerencia con IA.
 * **Fuera del alcance (Qué no realiza en esta primera etapa):**
   - Facturación fiscal electrónica directa vinculada a la AFIP (se emite comprobante de control interno homologado académicamente).
-  - Cobro bancario con débito de dinero real en cuentas bancarias comerciales (se opera mediante simulación integral de pasarela de pago con validación de tarjetas de crédito/débito y verificación criptográfica).
+  - Cobro bancario con débito de dinero real: el checkout solo simula la experiencia de pago y valida formatos; no se conecta con bancos, no debita fondos y no realiza verificaciones criptográficas propias.
 
 ### 1.4 Objetivos de la documentación
 - Brindar una especificación clara y rigurosa de los requisitos funcionales, no funcionales y de arquitectura del proyecto.
@@ -72,7 +72,7 @@ Proporcionar a YORUMANGA una herramienta digital multiplataforma (móvil y web) 
 ### 2.3 Funciones principales
 1. **Módulo de Usuarios y Seguridad:** Control de acceso estricto y vistas según rol.
 2. **Módulo de Catálogo y Búsqueda:** Exploración en cuadrícula y detalle con sinopsis, portada y stock en vivo.
-3. **Módulo de Carrito y Pasarela de Pago Simulada (Checkout):** Interfaz interactiva de tarjeta 3D (giro frente/dorso, chip EMV, detección dinámica de marca Visa/Mastercard/Amex/Cabal/Naranja), financiación en cuotas sin interés, validación en tiempo real y emisión de comprobante digital de compra.
+3. **Módulo de Carrito y Checkout de Demostración:** Interfaz interactiva de tarjeta 3D (giro frente/dorso, chip EMV, detección dinámica de marca Visa/Mastercard/Amex/Cabal/Naranja), 1/3/6 cuotas sin interés, validación en tiempo real y comprobante interno. Sin cobro real ni pasarela bancaria.
 4. **Módulo de Ventas Transaccionales:** Procedimiento en base de datos que descuenta stock y registra la venta de manera atómica.
 5. **Módulo de Depósito y Proveedores:** Entrada y salida de mercadería con justificación y libreta de proveedores.
 6. **Módulo de Inteligencia Artificial:** Recomendador temático para clientes y redactor de resúmenes comerciales para la administración.
@@ -87,7 +87,7 @@ Proporcionar a YORUMANGA una herramienta digital multiplataforma (móvil y web) 
 # 3. Arquitectura del Sistema
 
 ### 3.1 Estilo arquitectónico
-Se adoptó una arquitectura **BaaS (Backend as a Service) desacoplada**, con una aplicación cliente enriquecida (Thick Client) en React Native/Expo conectada a través de protocolos seguros (HTTPS/WSS) con la plataforma Supabase (PostgreSQL + Auth + Edge Functions).
+Se adoptó una arquitectura **BaaS (Backend as a Service) desacoplada**, con una aplicación cliente enriquecida (Thick Client) en React Native/Expo conectada a través de protocolos seguros (HTTPS/WSS) con la plataforma Supabase (PostgreSQL + Auth + Edge Functions). La Edge Function de IA está implementada en `supabase/funciones/ai/logica.js`, con variables y funciones en español (con `index.js` como punto de entrada): recibe `recommend`, `report` y `chat`, y mantiene la clave de Gemini solo en el servidor.
 
 ```mermaid
 flowchart TD
@@ -294,7 +294,7 @@ Al autenticarse mediante email y contraseña, Supabase Auth devuelve un token JW
 
 ### 6.3 Seguridad
 - Políticas RLS (Row Level Security) activadas en todas las tablas para evitar que un usuario manipule registros ajenos.
-- Todas las comunicaciones viajan encriptadas mediante TLS 1.3 / HTTPS.
+- Las comunicaciones con Supabase se realizan por HTTPS/TLS propio del proveedor; la app no implementa cifrado propio y el checkout no contacta a entidades bancarias.
 
 ### 6.4 Normativas aplicables
 - Principio de confidencialidad y resguardo de datos personales de los clientes.
@@ -320,25 +320,17 @@ Validación de estados de carga (`ActivityIndicator`), botones deshabilitados du
 
 ### 7.5 Criterios de aceptación (Matriz de Casos de Prueba)
 
-| ID | Módulo / Función | Tipo | Entrada / Prueba Realizada | Resultado Esperado | Resultado Obtenido |
-|---|---|---|---|---|---|
-| **CP01** | Autenticación | Positivo | Usuario y contraseña registrados | Concede acceso a la pantalla de inicio | **Aprobado** |
-| **CP02** | Autenticación | Negativo | Contraseña equivocada | Rechaza acceso con mensaje de error | **Aprobado** |
-| **CP03** | Registro | Límite | Contraseña de exactamente 6 caracteres | Acepta el registro y crea usuario | **Aprobado** |
-| **CP04** | Registro | Negativo | Contraseña de 5 caracteres | Rechaza por longitud insuficiente | **Aprobado** |
-| **CP05** | Venta Mostrador | Positivo | Vender 2 unidades de un producto con stock 8 | Registra venta y descuenta stock a 6 | **Aprobado** |
-| **CP06** | Venta Mostrador | Límite | Vender exactamente las 6 unidades restantes | Permite venta y el stock resultante es 0 | **Aprobado** |
-| **CP07** | Venta Mostrador | Negativo | Intentar vender 1 unidad con stock 0 | Servidor bloquea la venta con excepción | **Aprobado** |
-| **CP08** | Carrito Online | Positivo | Agregar 2 títulos y confirmar pedido | Genera pedido en estado 'pendiente' | **Aprobado** |
-| **CP09** | Seguridad RLS | Negativo | Cliente intenta llamar a API de Admin | Base de datos deniega la petición (403) | **Aprobado** |
-| **CP10** | Depósito | Positivo | Registrar entrada de 15 tomos de manga | Stock del producto aumenta a 15 | **Aprobado** |
-| **CP11** | Recomendador IA | Positivo | Ingresar preferencia: "peleas, ninjas y acción" | Sugiere Naruto / Jujutsu Kaisen en stock | **Aprobado** |
-| **CP12** | Registro / Roles | Positivo | Seleccionar rol 'vendedor' al registrarse | El usuario se crea con rol 'vendedor' y accede al panel de ventas | **Aprobado** |
-| **CP13** | Catálogo / Filtros | Positivo | Filtrar por Novedades y scrollear hacia abajo | Muestra los mangas recientes y oculta filtros dando prioridad a las portadas | **Aprobado** |
-| **CP14** | Módulo de Pago | Positivo | Enfocar el campo CVV en la pantalla de pago | La tarjeta realiza giro 3D (Flip) mostrando la banda magnética y el código al dorso | **Aprobado** |
-| **CP15** | Módulo de Pago | Negativo | Ingresar fecha de vencimiento vencida (ej. 05/22) o mes 14/28 | El sistema bloquea el pago indicando fecha inválida o vencida | **Aprobado** |
-| **CP16** | Módulo de Pago | Positivo | Ingresar tarjeta de prueba Visa en 3 cuotas | Detecta marca Visa, calcula cuotas sin interés y aprueba el pago simulado con éxito | **Aprobado** |
-| **CP17** | Módulo de Pago | Positivo | Finalización de compra y comprobante | Emite ticket con código de operación `#YORU-XXXXXX`, descuenta stock y vacía el carrito | **Aprobado** |
+La matriz completa y actualizada de **31 casos (CP01–CP31)** se mantiene en [`docs/PRUEBAS.md`](PRUEBAS.md), única fuente de verdad. En este informe solo se resume su cobertura para no duplicar ni desincronizar la numeración:
+
+| Bloque | Casos | Cobertura |
+|:---|:---:|:---|
+| Autenticación y registro | CP01–CP08 | Login, contraseñas y validación de correos |
+| Ventas y pedidos | CP09–CP13 | Mostrador, carrito y reserva de stock |
+| Operaciones y seguridad | CP14–CP20 | Proveedores, clientes, movimientos y RLS |
+| Checkout de demostración y catálogo | CP21–CP25 | Tarjeta 3D, cuotas, comprobante y scroll |
+| Inteligencia Artificial | CP26–CP31 | CORS, sesión, tipos, recomendación, informes y chat |
+
+Los casos CP01–CP25 son de ejecución manual y no están automatizados. Los casos CP26–CP31 están automatizados con `npm run test:ai` (**6 passed / 0 failed**) y se ejecutan con Gemini y Supabase simulados. Las entradas, resultados esperados y obtenidos de cada caso se consultan en `docs/PRUEBAS.md`.
 
 ---
 

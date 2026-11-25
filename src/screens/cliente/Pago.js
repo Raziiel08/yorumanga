@@ -28,25 +28,24 @@ import {
 } from "../../constants/theme";
 import { formatearMoneda } from "../../utils/moneda";
 
-// Tarjetas de prueba académicas precargadas
 const TARJETAS_DE_PRUEBA = [
   {
     tipo: "crédito",
     numero: "4532 8921 4455 8892",
-    nombre: "AGUSTIN HERMIDA",
+    nombre: "USUARIO DE PRUEBA",
     expiracion: "11/28",
     cvv: "482",
-    dni: "43892102",
+    dni: "00000001",
     cuotas: 3,
     banco: "Visa Crédito (Banco Galicia)",
   },
   {
     tipo: "débito",
     numero: "5421 9832 1092 3411",
-    nombre: "ELIAS GONZALEZ",
+    nombre: "CLIENTE DEMO",
     expiracion: "08/29",
     cvv: "731",
-    dni: "44128941",
+    dni: "00000002",
     cuotas: 1,
     banco: "Mastercard Débito (Banco Nación)",
   },
@@ -57,8 +56,7 @@ export default function PantallaPago({ navigation }) {
   const { user } = useAuth();
   const { esEscritorio, anchoMaxContenido } = useResponsive();
 
-  // Estados del formulario
-  const [tipoTarjeta, setTipoTarjeta] = useState("crédito"); // 'crédito' | 'débito'
+  const [tipoTarjeta, setTipoTarjeta] = useState("crédito");
   const [numero, setNumero] = useState("");
   const [nombre, setNombre] = useState(user?.user_metadata?.nombre || "");
   const [expiracion, setExpiracion] = useState("");
@@ -67,13 +65,11 @@ export default function PantallaPago({ navigation }) {
   const [cuotas, setCuotas] = useState(1);
   const [volteada, setVolteada] = useState(false);
 
-  // Estados de proceso y modal de confirmación
   const [procesando, setProcesando] = useState(false);
   const [errorValidacion, setErrorValidacion] = useState("");
   const [comprobante, setComprobante] = useState(null);
   const [mostrarResumen, setMostrarResumen] = useState(false);
 
-  // Opciones de cuotas según el total
   const opcionesCuotas = [
     { cuotas: 1, texto: `1 pago de ${formatearMoneda(total)} (Sin interés)` },
     {
@@ -84,13 +80,8 @@ export default function PantallaPago({ navigation }) {
       cuotas: 6,
       texto: `6 cuotas de ${formatearMoneda(total / 6)} (Sin interés)`,
     },
-    {
-      cuotas: 12,
-      texto: `12 cuotas fijas de ${formatearMoneda((total * 1.15) / 12)}`,
-    },
   ];
 
-  // Manejador de cambio en número de tarjeta
   const manejarCambioNumero = (texto) => {
     const marca = detectarMarcaTarjeta(texto);
     const formateado = formatearNumeroTarjeta(texto, marca);
@@ -98,14 +89,12 @@ export default function PantallaPago({ navigation }) {
     setErrorValidacion("");
   };
 
-  // Manejador de expiración MM/AA
   const manejarCambioExpiracion = (texto) => {
     const formateado = formatearExpiracion(texto);
     setExpiracion(formateado);
     setErrorValidacion("");
   };
 
-  // Cargar tarjeta demo con 1 click
   const cargarTarjetaDemo = (tarjeta) => {
     setTipoTarjeta(tarjeta.tipo);
     setNumero(tarjeta.numero);
@@ -118,7 +107,6 @@ export default function PantallaPago({ navigation }) {
     setErrorValidacion("");
   };
 
-  // Validación de campos
   const validarCampos = () => {
     const digitos = numero.replace(/\D/g, "");
     if (digitos.length < 15) {
@@ -146,7 +134,6 @@ export default function PantallaPago({ navigation }) {
     return null;
   };
 
-  // Procesar pago
   const ejecutarPago = async () => {
     if (items.length === 0) {
       setErrorValidacion("El carrito está vacío. Agregá productos antes de pagar.");
@@ -163,13 +150,10 @@ export default function PantallaPago({ navigation }) {
     setErrorValidacion("");
 
     try {
-      // Simulación de conexión con la pasarela bancaria (1.5s)
       await new Promise((resolver) => setTimeout(resolver, 1500));
 
-      // Creación del pedido real en Supabase
       const pedidoId = await ordersService.createOrder(items);
 
-      // Generación de recibo simulado
       const marca = detectarMarcaTarjeta(numero).toUpperCase();
       const ultimos4 = numero.replace(/\s+/g, "").slice(-4);
       const codigoOperacion = `YORU-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -189,10 +173,9 @@ export default function PantallaPago({ navigation }) {
         }),
       });
 
-      // Limpiar el carrito de compras
       clear();
     } catch (e) {
-      setErrorValidacion(e.message || "Error al procesar el pago bancario.");
+      setErrorValidacion(e.message || "Error al registrar el pedido.");
     } finally {
       setProcesando(false);
     }
@@ -206,18 +189,16 @@ export default function PantallaPago({ navigation }) {
     >
       <View style={[estilos.contenedor, { maxWidth: Math.min(anchoMaxContenido, 680) }]}>
         
-        {/* Encabezado de Seguridad */}
         <View style={estilos.cabeceraSeguridad}>
-          <View style={estilos.insigniaSSL}>
-            <Icono nombre="lock-closed" tamaño={16} color={COLORES.exito} />
-            <Text style={estilos.textoSSL}>Pago Seguro SSL 256-bit</Text>
+          <View style={estilos.insigniaSimulacion}>
+            <Icono nombre="information-circle-outline" tamaño={16} color={COLORES.info} />
+            <Text style={estilos.textoSimulacion}>Checkout de demostración · sin cobro real</Text>
           </View>
           <Text style={estilos.subtituloSeguridad}>
-            Simulación de pasarela de pago para entrega académica
+            Simulación para entrega académica: no se envían datos a ningún banco ni se cifra información localmente
           </Text>
         </View>
 
-        {/* Resumen desplegable de la compra */}
         <View style={estilos.tarjetaResumen}>
           <TouchableOpacity
             style={estilos.cabeceraResumen}
@@ -259,7 +240,6 @@ export default function PantallaPago({ navigation }) {
           )}
         </View>
 
-        {/* Acceso Rápido para el Profesor (Tarjetas de prueba) */}
         <View style={estilos.seccionDemos}>
           <Text style={estilos.etiquetaDemos}>⚡ Tarjetas de prueba para evaluación:</Text>
           <View style={estilos.filaBotonesDemo}>
@@ -279,7 +259,6 @@ export default function PantallaPago({ navigation }) {
           </View>
         </View>
 
-        {/* Componente Interactivo de Tarjeta 3D */}
         <TarjetaCreditoInteractiva
           numero={numero}
           nombre={nombre}
@@ -290,7 +269,6 @@ export default function PantallaPago({ navigation }) {
           tipoTarjeta={tipoTarjeta}
         />
 
-        {/* Selector Débito / Crédito */}
         <View style={estilos.selectorTipo}>
           <TouchableOpacity
             style={[
@@ -344,9 +322,7 @@ export default function PantallaPago({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Formulario de Entrada */}
         <View style={estilos.formulario}>
-          {/* Número de tarjeta */}
           <View style={estilos.campo}>
             <Text style={estilos.etiqueta}>Número de la tarjeta</Text>
             <View style={estilos.contenedorInput}>
@@ -364,7 +340,6 @@ export default function PantallaPago({ navigation }) {
             </View>
           </View>
 
-          {/* Nombre y Apellido */}
           <View style={estilos.campo}>
             <Text style={estilos.etiqueta}>Nombre y apellido del titular</Text>
             <View style={estilos.contenedorInput}>
@@ -384,9 +359,7 @@ export default function PantallaPago({ navigation }) {
             </View>
           </View>
 
-          {/* Fila: Expiración y CVV */}
           <View style={estilos.filaDoble}>
-            {/* Vencimiento */}
             <View style={[estilos.campo, { flex: 1 }]}>
               <Text style={estilos.etiqueta}>Vencimiento</Text>
               <View style={estilos.contenedorInput}>
@@ -404,7 +377,6 @@ export default function PantallaPago({ navigation }) {
               </View>
             </View>
 
-            {/* Código de seguridad */}
             <View style={[estilos.campo, { flex: 1 }]}>
               <View style={estilos.filaEtiquetaCvv}>
                 <Text style={estilos.etiqueta}>Código CVV</Text>
@@ -423,14 +395,13 @@ export default function PantallaPago({ navigation }) {
                   }}
                   keyboardType="numeric"
                   maxLength={4}
-                  onFocus={() => setVolteada(true)} // Gira la tarjeta automáticamente
+                  onFocus={() => setVolteada(true)}
                   onBlur={() => setVolteada(false)}
                 />
               </View>
             </View>
           </View>
 
-          {/* DNI del titular */}
           <View style={estilos.campo}>
             <Text style={estilos.etiqueta}>DNI del titular</Text>
             <View style={estilos.contenedorInput}>
@@ -451,7 +422,6 @@ export default function PantallaPago({ navigation }) {
             </View>
           </View>
 
-          {/* Selector de cuotas (solo si es crédito) */}
           {tipoTarjeta === "crédito" && (
             <View style={estilos.campo}>
               <Text style={estilos.etiqueta}>Plan de cuotas</Text>
@@ -485,7 +455,6 @@ export default function PantallaPago({ navigation }) {
             </View>
           )}
 
-          {/* Aviso de Error */}
           {errorValidacion ? (
             <View style={estilos.avisoError}>
               <Icono nombre="alert-circle" tamaño={18} color={COLORES.error} />
@@ -493,7 +462,6 @@ export default function PantallaPago({ navigation }) {
             </View>
           ) : null}
 
-          {/* Botón Pagar */}
           <TouchableOpacity
             style={[
               estilos.botonPagar,
@@ -507,7 +475,7 @@ export default function PantallaPago({ navigation }) {
               <View style={estilos.filaProcesando}>
                 <ActivityIndicator color="#FFFFFF" size="small" />
                 <Text style={estilos.textoBotonPagar}>
-                  Procesando con la entidad bancaria...
+                  Registrando pedido (simulación)...
                 </Text>
               </View>
             ) : (
@@ -526,7 +494,6 @@ export default function PantallaPago({ navigation }) {
         </View>
       </View>
 
-      {/* MODAL DE COMPROBANTE DE PAGO APROBADO */}
       <Modal
         visible={!!comprobante}
         transparent={true}
@@ -534,7 +501,6 @@ export default function PantallaPago({ navigation }) {
       >
         <View style={estilos.fondoModal}>
           <View style={estilos.tarjetaComprobante}>
-            {/* Ícono de Aprobado */}
             <View style={estilos.iconoExito}>
               <Icono nombre="checkmark" tamaño={36} color="#FFFFFF" />
             </View>
@@ -544,7 +510,6 @@ export default function PantallaPago({ navigation }) {
               Tu pedido ha sido procesado con éxito y registrado en el sistema.
             </Text>
 
-            {/* Recibo Ticket */}
             <View style={estilos.ticket}>
               <View style={estilos.filaTicket}>
                 <Text style={estilos.etiquetaTicket}>Operación:</Text>
@@ -581,7 +546,6 @@ export default function PantallaPago({ navigation }) {
               </View>
             </View>
 
-            {/* Botones de acción */}
             <View style={estilos.accionesComprobante}>
               <TouchableOpacity
                 style={estilos.botonMisPedidos}
@@ -630,19 +594,19 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  insigniaSSL: {
+  insigniaSimulacion: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: COLORES.exitoClaro,
+    backgroundColor: COLORES.infoClaro,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: RADIO.completo,
   },
-  textoSSL: {
+  textoSimulacion: {
     fontSize: 12,
     fontWeight: "700",
-    color: COLORES.exito,
+    color: COLORES.info,
     fontFamily: FUENTES.bold,
   },
   subtituloSeguridad: {
@@ -907,7 +871,6 @@ const estilos = StyleSheet.create({
     marginTop: 12,
     lineHeight: 14,
   },
-  // Modal de Comprobante
   fondoModal: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.65)",

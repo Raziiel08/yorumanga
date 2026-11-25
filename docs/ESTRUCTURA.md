@@ -20,17 +20,25 @@ Yorumanga/
 ├── package.json             # Dependencias del proyecto
 ├── .env                     # Variables de entorno seguras (URL y Anon Key de Supabase)
 ├── supabase/
-│   └── basededatos.sql      # Script DDL completo idempotente (tablas, RLS, triggers y RPCs)
+│   ├── basededatos.sql      # Script DDL completo idempotente (tablas, RLS, triggers y RPCs)
+│   └── funciones/
+│       └── ai/
+│           ├── logica.js    # Lógica: recomendación / informe / chat con Gemini (JS puro)
+│           ├── index.js     # Punto de entrada: importa manejador
+│           └── pruebas.js   # 6 pruebas con Gemini y Supabase simulados
 ├── docs/                    # Documentación formal completa para entrega
-│   ├── DOCUMENTO_FINAL_WORD.md
+│   ├── DOCUMENTO_FINAL_WORD.md   # Documento integral para Word (10 secciones)
+│   ├── PRESENTACION_DEFENSA.md   # Guion de defensa en 10 puntos
+│   ├── CHECKLIST_ENTREGA.md      # Checklist final de entrega
 │   ├── MANUAL_DE_USUARIO.md
 │   ├── REGISTRO_IA.md
 │   ├── RESUMENES_SEMANALES.md
 │   ├── BASE_DE_DATOS.md
 │   ├── DIAGRAMAS.md
-│   ├── PRUEBAS.md
+│   ├── PRUEBAS.md                # Única fuente de verdad: CP01–CP31
 │   ├── PROYECTO_INTEGRADOR.md
-│   └── assets/qrs/          # Códigos QR del local comercial
+│   ├── informe final.md          # Informe técnico (referencia a PRUEBAS.md)
+│   └── assets/qrs/               # Códigos QR del local comercial
 └── src/
     ├── assets/              # Logo institucional (yorumanga-logo.png)
     ├── components/          # Componentes visuales modulares reutilizables
@@ -106,14 +114,14 @@ Yorumanga/
 ## 4. Flujo Transaccional de Ventas y Pedidos
 
 ```
-[Compra Online y Pasarela de Pago Simulada]
+[Compra Online y Checkout de Demostración]
   1. Cliente agrega tomos al Carrito y presiona "Proceder al Pago"
-  2. Módulo de Pago Seguro abre interfaz de Tarjeta 3D interactiva
+  2. La pantalla de pago abre la interfaz de Tarjeta 3D interactiva
   3. Detección automática de marca (Visa / Mastercard / Amex / Cabal / Naranja)
   4. Animación Flip (giro al dorso en 3D) al ingresar o enfocar el código CVV
-  5. Selección de cuotas (1 a 6 cuotas sin interés) o carga rápida de tarjeta de prueba
-  6. Presiona "Pagar": simulación de autorización SSL bancaria
-  7. Ejecución de RPC crear_pedido -> Descuenta stock y genera comprobante con código de operación
+  5. Selección de cuotas (1, 3 o 6, todas sin interés) o carga rápida de tarjeta de prueba
+  6. Presiona "Pagar": pausa visual de demostración (sin conexión bancaria, sin SSL propio, sin cobro)
+  7. Ejecución de RPC crear_pedido -> Descuenta stock y genera comprobante interno con código de operación
 
 [Venta en Mostrador]
   1. Vendedor selecciona o crea Cliente (+ Nuevo cliente)

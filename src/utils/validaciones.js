@@ -19,12 +19,10 @@ export function correoValido(email) {
   const usuario = partes[0].trim();
   const dominio = partes[1].trim();
 
-  // Validar caracteres básicos del usuario antes del @
   if (!usuario || !/^[a-zA-Z0-9._%+-]+$/.test(usuario)) {
     return false;
   }
 
-  // El dominio DEBE estar en la lista de dominios populares permitidos
   return DOMINIOS_POPULARES_PERMITIDOS.includes(dominio);
 }
 
@@ -48,7 +46,6 @@ export function validarErrorCorreo(email) {
 
   const dominio = partes[1].trim();
 
-  // Si escribió gmail sin .com o mal
   if (dominio === "gmail" || (dominio.startsWith("gmail") && dominio !== "gmail.com")) {
     return "El correo de Gmail debe ser '@gmail.com'.";
   }

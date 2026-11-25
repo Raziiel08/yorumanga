@@ -14,9 +14,6 @@ const VARIANTES = {
   neutro: { fondo: COLORES.superficieAlterna, texto: COLORES.textoSecundario },
 };
 
-/**
- * Etiqueta (badge) reutilizable: "OFERTA", estados de pedidos, stock, etc.
- */
 export default function Etiqueta({
   texto,
   variante = "neutro",

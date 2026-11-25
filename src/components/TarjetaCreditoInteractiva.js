@@ -11,9 +11,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icono from "./Icono";
 import { COLORES, FUENTES, RADIO, SOMBRAS } from "../constants/theme";
 
-/**
- * Detecta la marca de la tarjeta según los primeros dígitos
- */
 export function detectarMarcaTarjeta(numero) {
   const limpio = (numero || "").replace(/\D/g, "");
   if (/^4/.test(limpio)) return "visa";
@@ -24,9 +21,6 @@ export function detectarMarcaTarjeta(numero) {
   return "generica";
 }
 
-/**
- * Formatea número de tarjeta en grupos de 4 (o 4-6-5 para Amex)
- */
 export function formatearNumeroTarjeta(valor, marca = "generica") {
   const limpio = (valor || "").replace(/\D/g, "").slice(0, marca === "amex" ? 15 : 16);
   if (marca === "amex") {
@@ -38,9 +32,6 @@ export function formatearNumeroTarjeta(valor, marca = "generica") {
   return limpio.match(/.{1,4}/g)?.join(" ") || limpio;
 }
 
-/**
- * Formatea fecha MM/AA
- */
 export function formatearExpiracion(valor) {
   const limpio = (valor || "").replace(/\D/g, "").slice(0, 4);
   if (limpio.length >= 3) {
@@ -56,7 +47,7 @@ export default function TarjetaCreditoInteractiva({
   cvv = "",
   volteada = false,
   onAlternarGiro,
-  tipoTarjeta = "crédito", // 'crédito' | 'débito'
+  tipoTarjeta = "crédito",
 }) {
   const animacionGiro = useRef(new Animated.Value(volteada ? 1 : 0)).current;
 
@@ -71,7 +62,6 @@ export default function TarjetaCreditoInteractiva({
 
   const marca = detectarMarcaTarjeta(numero);
 
-  // Formato visual para mostrar los números en la tarjeta
   const digitosLimpios = (numero || "").replace(/\D/g, "");
   const mascaraBase = marca === "amex" ? "•••• •••••• •••••" : "•••• •••• •••• ••••";
   
@@ -81,7 +71,6 @@ export default function TarjetaCreditoInteractiva({
     numeroMostrado = formateado + mascaraBase.slice(formateado.length);
   }
 
-  // Interpolaciones para rotación 3D
   const giroFrente = animacionGiro.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "180deg"],
@@ -102,7 +91,6 @@ export default function TarjetaCreditoInteractiva({
     outputRange: [0, 0, 1, 1],
   });
 
-  // Renderizado del logo de la marca
   const renderLogoMarca = () => {
     switch (marca) {
       case "visa":
@@ -148,7 +136,6 @@ export default function TarjetaCreditoInteractiva({
 
   return (
     <View style={estilos.contenedorPrincipal}>
-      {/* Tarjeta con Flip interactivo */}
       <TouchableOpacity
         activeOpacity={0.95}
         onPress={onAlternarGiro}
@@ -156,7 +143,6 @@ export default function TarjetaCreditoInteractiva({
         accessibilityLabel={`Tarjeta de ${tipoTarjeta}. Tocar para ${volteada ? "ver el frente" : "ver el dorso"}`}
         style={estilos.areaTarjeta}
       >
-        {/* CARA FRONTAL */}
         <Animated.View
           style={[
             estilos.caraTarjeta,
@@ -174,39 +160,32 @@ export default function TarjetaCreditoInteractiva({
             end={{ x: 1, y: 1 }}
             style={estilos.gradienteTarjeta}
           >
-            {/* Decoración de ondas de fondo */}
             <View style={estilos.adornoCirculo1} />
             <View style={estilos.adornoCirculo2} />
 
-            {/* Cabecera: Tipo, Chip y Contactless */}
             <View style={estilos.filaCabecera}>
               <View style={estilos.filaChip}>
-                {/* Chip EMV Dorado */}
                 <View style={estilos.chipEMV}>
                   <View style={estilos.chipLinea1} />
                   <View style={estilos.chipLinea2} />
                   <View style={estilos.chipCentro} />
                 </View>
-                {/* Símbolo Contactless (NFC) */}
                 <View style={estilos.iconoContactless}>
                   <Icono nombre="wifi" tamaño={18} color="#E8D5B5" estilo={{ transform: [{ rotate: "90deg" }] }} />
                 </View>
               </View>
 
-              {/* Logo de la marca */}
               <View style={estilos.contenedorLogoMarca}>
                 {renderLogoMarca()}
               </View>
             </View>
 
-            {/* Número de Tarjeta */}
             <View style={estilos.contenedorNumero}>
               <Text style={estilos.textoNumeroTarjeta} numberOfLines={1}>
                 {numeroMostrado}
               </Text>
             </View>
 
-            {/* Pie: Titular y Expiración */}
             <View style={estilos.filaPie}>
               <View style={estilos.columnaTitular}>
                 <Text style={estilos.etiquetaCampo}>TITULAR DE LA TARJETA</Text>
@@ -225,7 +204,6 @@ export default function TarjetaCreditoInteractiva({
           </LinearGradient>
         </Animated.View>
 
-        {/* CARA DORSAL */}
         <Animated.View
           style={[
             estilos.caraTarjeta,
@@ -243,10 +221,8 @@ export default function TarjetaCreditoInteractiva({
             end={{ x: 1, y: 1 }}
             style={[estilos.gradienteTarjeta, estilos.gradienteDorso]}
           >
-            {/* Banda Magnética */}
             <View style={estilos.bandaMagnetica} />
 
-            {/* Panel de Firma y CVV */}
             <View style={estilos.contenedorFirmaYCvv}>
               <View style={estilos.panelFirma}>
                 <View style={estilos.lineasFirma1} />
@@ -261,7 +237,6 @@ export default function TarjetaCreditoInteractiva({
               </View>
             </View>
 
-            {/* Holograma de Seguridad y Leyenda */}
             <View style={estilos.pieDorso}>
               <View style={estilos.holograma}>
                 <Icono nombre="shield-checkmark" tamaño={16} color="#B3C5D7" />
@@ -269,7 +244,7 @@ export default function TarjetaCreditoInteractiva({
               </View>
 
               <Text style={estilos.leyendaAcademica}>
-                Yorumanga Payments • Simulación académica protegida SSL
+                Yorumanga Payments • Simulación académica (sin cobro real)
               </Text>
 
               {renderLogoMarca()}
@@ -278,7 +253,6 @@ export default function TarjetaCreditoInteractiva({
         </Animated.View>
       </TouchableOpacity>
 
-      {/* Botón rápido para voltear manualmente */}
       <TouchableOpacity
         style={estilos.botonVoltear}
         onPress={onAlternarGiro}
@@ -527,7 +501,6 @@ const estilos = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 1,
   },
-  // Dorso
   bandaMagnetica: {
     width: "100%",
     height: 38,

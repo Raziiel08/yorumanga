@@ -79,7 +79,6 @@ export const AuthProvider = ({ children }) => {
         return { error };
       }
 
-      // Si se obtuvo sesión inmediata y el rol es distinto a cliente, asegurar el rol
       if (data?.session && rolFinal !== "cliente") {
         try {
           await supabase.rpc("asignar_mi_rol", { p_rol: rolFinal });
@@ -98,13 +97,11 @@ export const AuthProvider = ({ children }) => {
     const rolesValidos = ["cliente", "vendedor", "deposito", "admin"];
     if (!rolesValidos.includes(nuevoRol)) return false;
     try {
-      // 1. Intentar por RPC seguro
       const { error: rpcError } = await supabase.rpc("asignar_mi_rol", { p_rol: nuevoRol });
       if (!rpcError) {
         if (user) setUser({ ...user, rol: nuevoRol });
         return true;
       }
-      // 2. Fallback update directo
       if (user?.id) {
         const { error: updError } = await supabase
           .from("usuarios")

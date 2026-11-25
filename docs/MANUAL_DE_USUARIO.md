@@ -63,10 +63,10 @@ Este manual explica de manera sencilla, clara y ordenada cómo operar cada funci
    - **Tarjeta 3D Dinámica:** Visualice la tarjeta en tiempo real con chip EMV dorado, ondas Contactless y detección automática de la marca (Visa, Mastercard, American Express, Cabal, Naranja).
    - **Giro Interactivo (Flip):** Al hacer foco en el campo CVV o presionar *"Ver dorso"*, la tarjeta gira suavemente en 3D revelando la banda magnética y el código de seguridad.
    - **Tarjetas de Prueba para Evaluación:** Cuenta con botones de acceso rápido que precargan tarjetas válidas de prueba (Visa Crédito o Mastercard Débito) con un solo toque para evaluar la experiencia de inmediato.
-   - **Planes de Financiación:** Si selecciona *Tarjeta de Crédito*, elija entre 1 pago o hasta 6 cuotas sin interés con cálculo automático.
+   - **Planes de Financiación:** Si selecciona *Tarjeta de Crédito*, elija entre 1 pago, 3 cuotas o 6 cuotas, todas sin interés, con cálculo automático. No se ofrecen otros planes.
    - **Validaciones en Vivo:** Control estricto de formato de tarjeta, nombre de titular en mayúsculas, expiración (MM/AA válido y futuro), código de seguridad y DNI.
-6. Presione **"Pagar [Monto]"**. El sistema simula la conexión segura cifrada SSL de 256 bits con la entidad bancaria.
-7. **Comprobante Digital de Compra:** Al aprobarse la transacción, se despliega el ticket con el código de operación único (ej. `#YORU-948201`), medio de pago enmascarado y monto total. El pedido se crea formalmente en la base de datos Supabase, se descuenta el stock y el carrito se vacía automáticamente.
+6. Presione **"Pagar [Monto]"**. El sistema muestra una pausa de demostración: **no se conecta con ningún banco, no debita dinero ni aplica cifrado SSL propio**. Solo registra el pedido en la base de datos.
+7. **Comprobante Digital de Compra:** Al confirmarse la simulación, se despliega el ticket con el código de operación único (ej. `#YORU-948201`), medio de pago enmascarado y monto total. El pedido se crea formalmente en la base de datos Supabase, se descuenta el stock y el carrito se vacía automáticamente. El comprobante es de control interno: no es una factura fiscal ni un recibo bancario.
 8. Desde el comprobante puede presionar **"Ver en Mis Pedidos"** para realizar el seguimiento del despacho.
 
 ### 2.3 Recomendador con Inteligencia Artificial

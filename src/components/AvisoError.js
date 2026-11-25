@@ -9,10 +9,6 @@ import {
   SOMBRAS,
 } from "../constants/theme";
 
-/**
- * Banner de error inline para reemplazar las alertas nativas de
- * carga / API. Muestra el mensaje y un botón "Reintentar" opcional.
- */
 export default function AvisoError({ mensaje, alReintentar, estilo }) {
   if (!mensaje) return null;
   return (
